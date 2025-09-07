@@ -1,47 +1,185 @@
-.piece {
-    cursor: pointer;
-    transition: all 0.3s ease;
+/* Piece styling and animations */
+.shogi-piece {
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: all 0.2s ease-in-out;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    font-weight: 900;
+    cursor: grab;
     user-select: none;
-}
-
-.piece:hover {
-    transform: scale(1.1);
-}
-
-.piece.selected {
-    transform: scale(1.2);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
-}
-
-.square {
     position: relative;
-    border: 1px solid #8B5CF6;
-    aspect-ratio: 1;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.square.highlight {
-    background-color: rgba(34, 197, 94, 0.3);
+.shogi-piece:active {
+    cursor: grabbing;
 }
 
-.square.possible-move {
-    background-color: rgba(59, 130, 246, 0.3);
+.shogi-piece.dragging {
+    opacity: 0.7;
+    transform: scale(1.1) rotate(5deg);
+    z-index: 1000;
+    pointer-events: none;
 }
 
-.captured-piece {
-    width: 40px;
-    height: 40px;
-    margin: 2px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #666;
-    background: #f8f9fa;
+/* SVG piece styling */
+.piece-svg {
+    width: 36px;
+    height: 42px;
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+    transition: all 0.2s ease;
 }
 
-.algorithm-step {
+.piece-svg:hover {
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
+    transform: scale(1.05);
+}
+
+/* Board square styling */
+.board-square {
+    aspect-ratio: 1;
+    border: 1px solid #8b5a2b;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+    min-height: 48px;
+}
+
+.board-square:hover {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+/* Selection and highlighting states */
+.board-square.highlighted {
+    background-color: rgba(34, 197, 94, 0.4) !important;
+    box-shadow: inset 0 0 0 2px rgba(34, 197, 94, 0.6);
+    animation: pulse-highlight 1.5s infinite;
+}
+
+.board-square.selected {
+    background-color: rgba(59, 130, 246, 0.5) !important;
+    box-shadow: inset 0 0 0 3px rgba(59, 130, 246, 0.8);
+    transform: scale(1.02);
+}
+
+.board-square.drop-zone {
+    background-color: rgba(34, 197, 94, 0.3) !important;
+    border: 2px dashed rgba(34, 197, 94, 0.8);
+}
+
+/* Highlight animations */
+@keyframes pulse-highlight {
+    0%, 100% {
+        box-shadow: inset 0 0 0 2px rgba(34, 197, 94, 0.6);
+    }
+    50% {
+        box-shadow: inset 0 0 0 2px rgba(34, 197, 94, 1);
+    }
+}
+
+/* Captured pieces area */
+#player-captured, #ai-captured {
+    min-height: 64px;
+    border: 2px dashed;
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+#player-captured {
+    border-color: rgba(59, 130, 246, 0.3);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.1));
+}
+
+#ai-captured {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(239, 68, 68, 0.1));
+}
+
+/* Move history styling */
+#move-history {
     font-family: 'Courier New', monospace;
-    font-size: 12px;
+}
+
+#move-history .move-entry {
+    padding: 4px 8px;
+    margin: 2px 0;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+#move-history .move-entry:hover {
+    background-color: rgba(75, 85, 99, 0.5);
+    border-left-color: #8b5cf6;
+}
+
+/* Statistics styling */
+.stat-value {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+/* Turn indicator styling */
+#current-turn {
+    transition: all 0.3s ease;
+}
+
+.turn-sente {
+    color: #3b82f6 !important;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.turn-gote {
+    color: #ef4444 !important;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+/* Custom scrollbar */
+#move-history::-webkit-scrollbar,
+#game-log::-webkit-scrollbar {
+    width: 6px;
+}
+
+#move-history::-webkit-scrollbar-track,
+#game-log::-webkit-scrollbar-track {
+    background: rgba(75, 85, 99, 0.3);
+    border-radius: 3px;
+}
+
+#move-history::-webkit-scrollbar-thumb,
+#game-log::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.6);
+    border-radius: 3px;
+}
+
+#move-history::-webkit-scrollbar-thumb:hover,
+#game-log::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.8);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .piece-svg {
+        width: 28px;
+        height: 32px;
+    }
+
+    .board-square {
+        min-height: 36px;
+    }
+}
+
+@media (max-width: 640px) {
+    .piece-svg {
+        width: 24px;
+        height: 28px;
+    }
+
+    .board-square {
+        min-height: 32px;
+    }
 }
