@@ -974,7 +974,7 @@ class ShogiGame {
         }
 
         // Update the display value, scaled for readability
-        this.gameStats.positionValue = (value / 100).toFixed(2);
+        this.gameStats.positionValue = value / 100;
         return value; // Return the raw score for the AI
     }
 
