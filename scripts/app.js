@@ -1056,15 +1056,19 @@ class ShogiGame {
     updateTurnDisplay() {
         const turnElement = document.getElementById('current-turn');
         const turnInfoElement = document.getElementById('turn-info');
+        const giveUpBtn = document.getElementById("forfeit-game");
+
         if (this.gameStarted) {
             if (this.currentPlayer === 'sente') {
                 turnElement.textContent = 'Player (Sente)';
                 turnElement.className = 'font-bold text-lg turn-sente';
                 turnInfoElement.textContent = 'Your turn. Drag a piece to make a move.';
+                giveUpBtn.disabled = true;
             } else {
                 turnElement.textContent = 'AI (Gote)';
                 turnElement.className = 'font-bold text-lg turn-gote';
                 turnInfoElement.textContent = 'AI is thinking...';
+                giveUpBtn.disabled = false;
             }
         } else {
             turnElement.textContent = 'Game not started';
@@ -1092,6 +1096,9 @@ class ShogiGame {
             this.gameStats.searchDepth = parseInt(e.target.value);
             this.logEvent(`AI depth set to ${this.gameStats.searchDepth}.`);
         });
+        document.getElementById("forfeit-game").addEventListener('click', () => {
+            this.endGame('gote');
+        })
     }
 
     startNewGame() {
@@ -1153,6 +1160,14 @@ class ShogiGame {
         }
 
         this.logEvent(`Checkmate detected for ${player}. No legal moves or drops available.`);
+
+        if (player === 'sente')
+            Swal.fire({
+                        title: "Checkmate 😂",
+                        text: "Better luck next time !",
+                        icon: "error"
+            });
+
         return true;
     }
 
