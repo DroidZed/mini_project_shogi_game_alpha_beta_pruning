@@ -1063,12 +1063,12 @@ class ShogiGame {
                 turnElement.textContent = 'Player (Sente)';
                 turnElement.className = 'font-bold text-lg turn-sente';
                 turnInfoElement.textContent = 'Your turn. Drag a piece to make a move.';
-                giveUpBtn.disabled = true;
+                giveUpBtn.disabled = false;
             } else {
                 turnElement.textContent = 'AI (Gote)';
                 turnElement.className = 'font-bold text-lg turn-gote';
                 turnInfoElement.textContent = 'AI is thinking...';
-                giveUpBtn.disabled = false;
+                giveUpBtn.disabled = true;
             }
         } else {
             turnElement.textContent = 'Game not started';
