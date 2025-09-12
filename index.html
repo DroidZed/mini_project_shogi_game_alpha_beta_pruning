@@ -1,368 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Shogi - AlphaBeta Pruning</title>
     <link rel="stylesheet" href="./styles/output.css" />
     <link rel="stylesheet" href="./styles/custom.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</head>
+  </head>
 
-<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white min-h-screen font-sans">
-    <header class="bg-black/20 backdrop-blur-sm border-b border-purple-500/20 top-0 z-50">
-        <div class="container mx-auto px-4 py-4">
-            <h1
-                class="text-4xl font-bold text-center bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                Shogi AI - Alpha-Beta Pruning Demo
-            </h1>
-            <p class="text-center text-gray-300 mt-2">Interactive demonstration of minimax with alpha-beta pruning in
-                Japanese Chess</p>
-        </div>
+  <body class="bg-wood text-cream min-h-screen font-serif">
+    <header class="header-main">
+      <div class="container mx-auto px-4 py-6">
+        <h1 class="text-5xl font-bold text-center text-heading drop-shadow-lg">将棋 Shogi AI - Alpha-Beta Pruning</h1>
+        <p class="text-center text-subheading mt-3 text-lg">
+          Interactive demonstration of minimax with alpha-beta pruning in Japanese Chess
+        </p>
+      </div>
     </header>
 
-    <main class="container mx-auto px-4 py-6 space-y-8">
+    <main class="container mx-auto px-4 py-6">
+      <section class="flex flex-wrap justify-center gap-4 mb-8">
+        <button id="open-about-btn" class="btn-action">📖 About This Demo</button>
+        <button id="open-pseudo-btn" class="btn-action">💻 View Algorithm</button>
+        <button id="open-shogi-btn" class="btn-action">🏯 How to Play Shogi</button>
+      </section>
 
-        <section class="flex flex-wrap justify-center gap-4">
-            <button id="open-about-btn"
-                class="bg-gray-700/50 hover:bg-gray-600/50 text-purple-300 font-semibold px-5 py-2 rounded-lg transition-colors">
-                ℹ️ About This Demo
-            </button>
-            <button id="open-pseudo-btn"
-                class="bg-gray-700/50 hover:bg-gray-600/50 text-indigo-300 font-semibold px-5 py-2 rounded-lg transition-colors">
-                ‍💻 View Pseudocode
-            </button>
-            <button id="open-shogi-btn"
-                class="bg-gray-700/50 hover:bg-gray-600/50 text-amber-300 font-semibold px-5 py-2 rounded-lg transition-colors">
-                룰 How to Play Shogi
-            </button>
-        </section>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <div class="lg:col-span-2 space-y-6">
-
-                <div
-                    class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-                    <div class="flex flex-wrap gap-4 items-center justify-between">
-                        <div class="flex gap-4">
-                            <button id="start-game"
-                                class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-blue-500/50">
-                                🎮 Start New Game
-                            </button>
-                            <button id="forfeit-game" class="bg-gradient-to-r from-red-600 to-orange-600
-                                hover:from-red-700 hover:to-orange-700 px-6 py-3 rounded-lg font-semibold transition-all
-                                duration-200 shadow-lg hover:shadow-red-500/50 disabled:opacity-50
-                                disabled:cursor-not-allowed" disabled>🏳️ Forfeit Game</button>
-                            <button id="reset-stats"
-                                class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 px-6 py-3 rounded-lg font-semibold transition-all duration-200">
-                                📊 Reset Stats
-                            </button>
-                        </div>
-                        <div class="flex gap-4 items-center">
-                            <label for="ai-depth" class="text-sm font-medium text-gray-300">AI Depth:</label>
-                            <select id="ai-depth"
-                                class="bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:ring-2 focus:ring-purple-500 focus:outline-none">
-                                <option value="2">2 - Fast</option>
-                                <option value="3" selected>3 - Balanced</option>
-                                <option value="4">4 - Strong</option>
-                                <option value="5">5 - Expert</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 p-4 bg-gray-700/50 rounded-lg">
-                        <div class="text-center">
-                            <span class="text-sm text-gray-400">Current Turn: </span>
-                            <span id="current-turn" class="font-bold text-lg text-green-400">Game not started</span>
-                            <div class="mt-2 text-xs text-gray-500" id="turn-info">Click "Start New Game" to begin</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold text-red-400 mb-3 flex items-center">
-                            <span class="text-2xl mr-2">☖</span>
-                            AI Captured Pieces (Gote)
-                        </h3>
-                        <div id="ai-captured"
-                            class="flex flex-row flex-wrap items-center justify-center bg-gray-700/50 p-4 rounded-lg min-h-[72px] border-2 border-red-500/30">
-                            <div class="text-gray-500 text-sm w-full text-center py-2">No captures yet</div>
-                        </div>
-                    </div>
-                    <div class="flex justify-center mb-6">
-
-                        <div class="bg-gradient-to-br from-amber-100 to-amber-200 p-4 rounded-lg shadow-2xl">
-
-                            <div class="grid grid-cols-9 gap-0 mb-2">
-
-                                <div class="w-12 h-6 text-center text-sm font-bold text-amber-800">9</div>
-
-                                <div class="w-12 h-6 text-center text-sm font-bold text-amber-800">8</div>
-
-                                <div class="w-12 h-6 text-center text-sm font-bold text-amber-800">7</div>
-
-                                <div class="w-12 h-6 text-center text-sm font-bold text-amber-800">6</div>
-
-                                <div class="w-12 h-6 text-center text-sm font-bold text-amber-800">5</div>
-
-                                <div class="w-12 h-6 text-center text-sm font-bold text-amber-800">4</div>
-
-                                <div class="w-12 h-6 text-center text-sm font-bold text-amber-800">3</div>
-
-                                <div class="w-12 h-6 text-center text-sm font-bold text-amber-800">2</div>
-
-                                <div class="w-12 h-6 text-center text-sm font-bold text-amber-800">1</div>
-
-                            </div>
-
-
-                            <div class="flex">
-
-                                <div class="flex flex-col mr-2">
-
-                                    <div
-                                        class="w-6 h-12 flex items-center justify-center text-sm font-bold text-amber-800">
-
-                                        a
-
-                                    </div>
-
-                                    <div
-                                        class="w-6 h-12 flex items-center justify-center text-sm font-bold text-amber-800">
-
-                                        b
-
-                                    </div>
-
-                                    <div
-                                        class="w-6 h-12 flex items-center justify-center text-sm font-bold text-amber-800">
-
-                                        c
-
-                                    </div>
-
-                                    <div
-                                        class="w-6 h-12 flex items-center justify-center text-sm font-bold text-amber-800">
-
-                                        d
-
-                                    </div>
-
-                                    <div
-                                        class="w-6 h-12 flex items-center justify-center text-sm font-bold text-amber-800">
-
-                                        e
-
-                                    </div>
-
-                                    <div
-                                        class="w-6 h-12 flex items-center justify-center text-sm font-bold text-amber-800">
-
-                                        f
-
-                                    </div>
-
-                                    <div
-                                        class="w-6 h-12 flex items-center justify-center text-sm font-bold text-amber-800">
-
-                                        g
-
-                                    </div>
-
-                                    <div
-                                        class="w-6 h-12 flex items-center justify-center text-sm font-bold text-amber-800">
-
-                                        h
-
-                                    </div>
-
-                                    <div
-                                        class="w-6 h-12 flex items-center justify-center text-sm font-bold text-amber-800">
-
-                                        i
-
-                                    </div>
-
-                                </div>
-
-
-                                <div id="shogi-board" class="grid grid-cols-9 gap-0 bg-amber-50">
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold text-blue-400 mb-3 flex items-center">
-                            <span class="text-2xl mr-2">☗</span>
-                            Player Captured Pieces (Sente)
-                        </h3>
-                        <div id="player-captured"
-                            class="flex flex-row flex-wrap items-center justify-center bg-gray-700/50 p-4 rounded-lg min-h-[72px] border-2 border-blue-500/30">
-                            <div class="text-gray-500 text-sm w-full text-center py-2">No captures yet</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div
-                        class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-                        <h3 class="text-xl font-semibold mb-4 text-green-400">Move History</h3>
-                        <div id="move-history" class="bg-gray-700/50 p-4 rounded-lg h-64 overflow-y-auto">
-                            <div class="text-gray-500 text-sm text-center py-8">No moves yet</div>
-                        </div>
-                    </div>
-                    <div
-                        class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-                        <h3 class="text-xl font-semibold mb-4 text-yellow-400">Game Events</h3>
-                        <div id="game-log" class="bg-gray-700/50 p-4 rounded-lg h-64 overflow-y-auto">
-                            <div class="text-gray-500 text-sm text-center py-8">Game not started</div>
-                        </div>
-                    </div>
-                </div>
+      <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        <div class="xl:col-span-1 space-y-6">
+          <section class="info-panel">
+            <h2 class="section-title text-center">🤖 AI Performance</h2>
+            <div class="grid grid-cols-1 gap-4">
+              <div class="stat-box stat-green">
+                <div class="text-sm font-semibold">Nodes Evaluated</div>
+                <div class="text-3xl font-bold stat-value" id="nodes-evaluated">0</div>
+              </div>
+              <div class="stat-box stat-red">
+                <div class="text-sm font-semibold">Nodes Pruned</div>
+                <div class="text-3xl font-bold stat-value" id="nodes-pruned">0</div>
+              </div>
+              <div class="stat-box stat-blue">
+                <div class="text-sm font-semibold">Pruning Rate</div>
+                <div class="text-3xl font-bold stat-value" id="pruning-rate">0%</div>
+              </div>
+              <div class="stat-box stat-purple">
+                <div class="text-sm font-semibold">Time (ms)</div>
+                <div class="text-3xl font-bold stat-value" id="time-taken">0</div>
+              </div>
             </div>
+          </section>
 
-            <div class="lg:col-span-1 space-y-6">
-                <section
-                    class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-                    <h2 class="text-2xl font-semibold mb-6 text-blue-400">AI Performance</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div
-                            class="bg-gradient-to-br from-green-900/50 to-green-800/50 p-4 rounded-lg border border-green-700/30">
-                            <div class="text-sm text-green-300">Nodes Evaluated</div>
-                            <div class="text-2xl font-bold text-green-400 stat-value" id="nodes-evaluated">0</div>
-                        </div>
-                        <div
-                            class="bg-gradient-to-br from-red-900/50 to-red-800/50 p-4 rounded-lg border border-red-700/30">
-                            <div class="text-sm text-red-300">Nodes Pruned</div>
-                            <div class="text-2xl font-bold text-red-400 stat-value" id="nodes-pruned">0</div>
-                        </div>
-                        <div
-                            class="bg-gradient-to-br from-blue-900/50 to-blue-800/50 p-4 rounded-lg border border-blue-700/30">
-                            <div class="text-sm text-blue-300">Pruning Rate</div>
-                            <div class="text-2xl font-bold text-blue-400 stat-value" id="pruning-rate">0%</div>
-                        </div>
-                        <div
-                            class="bg-gradient-to-br from-purple-900/50 to-purple-800/50 p-4 rounded-lg border border-purple-700/30">
-                            <div class="text-sm text-purple-300">Time (ms)</div>
-                            <div class="text-2xl font-bold text-purple-400 stat-value" id="time-taken">0</div>
-                        </div>
-                    </div>
-                </section>
-
-                <div
-                    class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-                    <h3 class="text-xl font-semibold mb-4 text-cyan-400">Current Analysis</h3>
-                    <div class="space-y-3 text-sm">
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="text-gray-400 mb-1">Position Value:</div>
-                            <div id="position-eval" class="font-mono text-lg text-cyan-400">+0.00</div>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="text-gray-400 mb-1">Best AI Move:</div>
-                            <div id="best-move" class="font-mono text-green-400">None</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-                    <h3 class="text-xl font-semibold mb-4 text-orange-400">Game Status</h3>
-                    <div class="space-y-3 text-sm">
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="text-gray-400 mb-1">Move Count:</div>
-                            <div id="move-count" class="font-mono text-lg text-orange-400">0</div>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="text-gray-400 mb-1">Game State:</div>
-                            <div id="game-state" class="font-mono text-green-400">Ready</div>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="text-gray-400 mb-1">Last Move:</div>
-                            <div id="last-move" class="font-mono text-blue-400">None</div>
-                        </div>
-                    </div>
-                </div>
+          <div class="info-panel">
+            <h3 class="section-title text-center">📊 Analysis</h3>
+            <div class="space-y-4 text-sm">
+              <div class="stat-box stat-subtle">
+                <div class="text-sm font-semibold">Position Value:</div>
+                <div id="position-eval" class="font-mono text-2xl">+0.00</div>
+              </div>
+              <div class="stat-box stat-subtle">
+                <div class="text-sm font-semibold">Best AI Move:</div>
+                <div id="best-move" class="font-mono text-lg">None</div>
+              </div>
             </div>
+          </div>
+
+          <div class="info-panel">
+            <h3 class="section-title text-center">⚡ Status</h3>
+            <div class="space-y-4 text-sm">
+              <div class="stat-box stat-subtle">
+                <div class="text-sm font-semibold">Move Count:</div>
+                <div id="move-count" class="font-mono text-2xl">0</div>
+              </div>
+              <div class="stat-box stat-subtle">
+                <div class="text-sm font-semibold">Game State:</div>
+                <div id="game-state" class="font-mono text-lg">Ready</div>
+              </div>
+              <div class="stat-box stat-subtle">
+                <div class="text-sm font-semibold">Last Move:</div>
+                <div id="last-move" class="font-mono text-lg">None</div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <div class="xl:col-span-2 space-y-6">
+          <div class="info-panel">
+            <div class="flex flex-wrap gap-4 items-center justify-between mb-6">
+              <div class="flex flex-wrap gap-4">
+                <button id="start-game" class="btn-game btn-green">🎮 New Game</button>
+                <button
+                  id="forfeit-game"
+                  class="btn-game btn-red disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled
+                >
+                  🏳️ Forfeit
+                </button>
+                <button id="reset-stats" class="btn-game btn-subtle">📊 Reset Stats</button>
+              </div>
+              <div class="flex gap-4 items-center control-box">
+                <label for="ai-depth" class="text-lg font-bold">AI Depth:</label>
+                <select id="ai-depth" class="select-field">
+                  <option value="">AI Depth</option>
+                  <option value="2">2 - Fast</option>
+                  <option value="3" selected>3 - Balanced</option>
+                  <option value="4">4 - Strong</option>
+                  <option value="5">5 - Expert</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="turn-indicator">
+              <div class="text-center">
+                <span class="text-lg font-semibold text-subheading">Current Turn: </span>
+                <span id="current-turn" class="font-bold text-2xl">Game not started</span>
+                <div class="mt-3 text-base text-subheading" id="turn-info">
+                  Click "New Game" to begin your Shogi adventure
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-panel">
+            <h3 class="section-title text-red text-center flex items-center justify-center">
+              <span class="text-3xl mr-3">☖</span>
+              AI Captured Pieces (Gote)
+            </h3>
+            <div id="ai-captured" class="captured-area">
+              <div class="text-subheading text-lg w-full text-center py-4 font-semibold">No captures yet</div>
+            </div>
+          </div>
+
+          <div class="flex justify-center">
+            <div class="shogi-board-container">
+              <div class="grid grid-cols-9 gap-0 mb-3 text-amber-900">
+                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">9</div>
+                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">8</div>
+                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">7</div>
+                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">6</div>
+                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">5</div>
+                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">4</div>
+                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">3</div>
+                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">2</div>
+                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">1</div>
+              </div>
+
+              <div class="flex">
+                <div class="flex flex-col mr-3 text-amber-900">
+                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">a</div>
+                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">b</div>
+                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">c</div>
+                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">d</div>
+                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">e</div>
+                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">f</div>
+                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">g</div>
+                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">h</div>
+                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">i</div>
+                </div>
+
+                <div id="shogi-board" class="shogi-board-grid"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-panel">
+            <h3 class="section-title text-blue text-center flex items-center justify-center">
+              <span class="text-3xl mr-3">☗</span>
+              Player Captured Pieces (Sente)
+            </h3>
+            <div id="player-captured" class="captured-area">
+              <div class="text-subheading text-lg w-full text-center py-4 font-semibold">No captures yet</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="xl:col-span-1 space-y-6">
+          <div class="info-panel">
+            <h3 class="section-title text-green text-center">📜 Move History</h3>
+            <div id="move-history" class="log-panel">
+              <div class="text-subheading text-base text-center py-12 font-semibold">No moves recorded yet</div>
+            </div>
+          </div>
+
+          <div class="info-panel">
+            <h3 class="section-title text-yellow text-center">📋 Game Events</h3>
+            <div id="game-log" class="log-panel">
+              <div class="text-subheading text-base text-center py-12 font-semibold">Game not started</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
-    <dialog id="about-modal"
-        class="self-center-safe justify-self-center bg-transparent text-white p-0 rounded-xl max-w-4xl w-full">
-        <div
-            class="bg-gradient-to-br from-gray-800 to-gray-900 backdrop-blur-sm rounded-xl p-8 border border-gray-700/50">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-bold text-purple-400">About This Demo</h2>
-                <button id="close-about-btn" class="text-gray-400 hover:text-white text-3xl">&times;</button>
-            </div>
-            <div class="grid lg:grid-cols-3 gap-8 text-sm">
-                <div>
-                    <h3 class="text-xl font-semibold mb-4 text-blue-400">Alpha-Beta Pruning</h3>
-                    <p class="text-gray-300 mb-4">
-                        An optimization for the minimax algorithm. It reduces the number of nodes evaluated by
-                        eliminating
-                        branches that won't influence the final decision.
-                    </p>
-                    <div class="bg-gray-700/50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-green-400 mb-2">Key Benefits:</h4>
-                        <ul class="text-gray-300 space-y-1 list-disc list-inside">
-                            <li>Reduces computation time</li>
-                            <li>Maintains optimal play</li>
-                            <li>Enables deeper search</li>
-                        </ul>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xl font-semibold mb-4 text-blue-400">How It Works</h3>
-                    <p class="text-gray-300 mb-4">
-                        The algorithm maintains two values: Alpha (best for maximizing player) and Beta (best for
-                        minimizing
-                        player). When Alpha ≥ Beta, the branch is pruned.
-                    </p>
-                    <div class="bg-gray-700/50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-yellow-400 mb-2">Process:</h4>
-                        <ul class="text-gray-300 space-y-1 list-decimal list-inside">
-                            <li>Explore game tree depth-first</li>
-                            <li>Update Alpha/Beta values</li>
-                            <li>Prune when Alpha ≥ Beta</li>
-                            <li>Return best move</li>
-                        </ul>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xl font-semibold mb-4 text-blue-400">Complexity Analysis</h3>
-                    <div class="bg-gray-700/50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-red-400 mb-2">Time Complexity:</h4>
-                        <div class="text-gray-300 space-y-1">
-                            <div>Best: <code class="text-green-400">O(b^(d/2))</code></div>
-                            <div>Worst: <code class="text-red-400">O(b^d)</code></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <dialog id="about-modal" class="modal-main">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-3xl font-bold text-heading">About This Demo</h2>
+          <button id="close-about-btn" class="modal-close">&times;</button>
         </div>
+        <div class="grid lg:grid-cols-3 gap-8 text-sm">
+          <div>
+            <h3 class="text-xl font-semibold mb-4 text-blue">Alpha-Beta Pruning</h3>
+            <p>
+              An optimization for the minimax algorithm. It reduces the number of nodes evaluated by eliminating
+              branches that won't influence the final decision.
+            </p>
+            <div class="info-box">
+              <h4 class="font-semibold text-green mb-2">Key Benefits:</h4>
+              <ul class="text-cream space-y-1 list-disc list-inside">
+                <li>Reduces computation time</li>
+                <li>Maintains optimal play</li>
+                <li>Enables deeper search</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold mb-4 text-blue">How It Works</h3>
+            <p>
+              The algorithm maintains two values: Alpha (best for maximizing player) and Beta (best for minimizing
+              player). When Alpha ≥ Beta, the branch is pruned.
+            </p>
+            <div class="info-box">
+              <h4 class="font-semibold text-yellow mb-2">Process:</h4>
+              <ul class="text-cream space-y-1 list-decimal list-inside">
+                <li>Explore game tree depth-first</li>
+                <li>Update Alpha/Beta values</li>
+                <li>Prune when Alpha ≥ Beta</li>
+                <li>Return best move</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold mb-4 text-blue">Complexity Analysis</h3>
+            <div class="info-box">
+              <h4 class="font-semibold text-red mb-2">Time Complexity:</h4>
+              <div class="text-cream space-y-1">
+                <div>
+                  Best: <code class="text-green bg-panel px-1 rounded">O(b^(d/2))</code>
+                </div>
+                <div>
+                  Worst: <code class="text-red bg-panel px-1 rounded">O(b^d)</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </dialog>
 
-    <dialog id="pseudo-modal"
-        class="self-center-safe justify-self-center bg-transparent text-white p-0 rounded-xl max-w-4xl w-full">
-        <div
-            class="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 backdrop-blur-sm rounded-xl p-8 border border-indigo-700/30">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-bold text-indigo-400">Alpha-Beta Pruning Pseudocode</h2>
-                <button id="close-pseudo-btn" class="text-gray-400 hover:text-white text-3xl">&times;</button>
-            </div>
-            <div class="grid lg:grid-cols-2 gap-8">
-                <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-600/50">
-                    <h3 class="text-lg font-semibold mb-4 text-cyan-400">Main Algorithm</h3>
-                    <pre class="text-xs text-gray-200 overflow-x-auto p-2 bg-black/20 rounded"><code>function alphaBeta(node, depth, a, b, isMax):
+    <dialog id="pseudo-modal" class="modal-main">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-3xl font-bold text-heading">Alpha-Beta Pruning Pseudocode</h2>
+          <button id="close-pseudo-btn" class="modal-close">&times;</button>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-8">
+          <div class="info-box">
+            <h3 class="text-lg font-semibold mb-4 text-blue">Main Algorithm</h3>
+            <pre class="code-block"><code>function alphaBeta(node, depth, a, b, isMax):
   if depth == 0 or node.isTerminal:
     return evaluate(node)
 
@@ -380,10 +273,10 @@
       b = min(b, v)
       if b <= a: break // Prune
     return v</code></pre>
-                </div>
-                <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-600/50">
-                    <h3 class="text-lg font-semibold mb-4 text-cyan-400">Initial Call</h3>
-                    <pre class="text-xs text-gray-200 overflow-x-auto p-2 bg-black/20 rounded"><code>function findBestMove(pos, depth):
+          </div>
+          <div class="info-box">
+            <h3 class="text-lg font-semibold mb-4 text-blue">Initial Call</h3>
+            <pre class="code-block"><code>function findBestMove(pos, depth):
   bestMove = null
   bestVal = -∞, a = -∞, b = +∞
 
@@ -396,84 +289,82 @@
       bestMove = move
     a = max(a, val)
   return bestMove</code></pre>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
     </dialog>
 
-    <dialog id="shogi-modal"
-        class="self-center-safe justify-self-center bg-transparent text-white p-0 rounded-xl max-w-4xl w-full">
-        <div
-            class="bg-gradient-to-br from-amber-900/50 to-orange-900/50 backdrop-blur-sm rounded-xl p-8 border border-amber-700/30">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-bold text-amber-400">Shogi - Japanese Chess</h2>
-                <button id="close-shogi-btn" class="text-gray-400 hover:text-white text-3xl">&times;</button>
-            </div>
-            <div class="grid lg:grid-cols-3 gap-8 text-sm">
-                <div>
-                    <h3 class="text-xl font-semibold mb-4 text-orange-400">Game Overview</h3>
-                    <p class="text-gray-300 mb-4">
-                        A two-player strategy game. Unlike Western chess, captured pieces can be returned to the board
-                        as
-                        your own, creating dynamic and complex gameplay.
-                    </p>
-                    <div class="bg-gray-800/50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-green-400 mb-2">Key Features:</h4>
-                        <ul class="text-gray-300 space-y-1 list-disc list-inside">
-                            <li>9×9 board, 40 pieces</li>
-                            <li>Piece drops (re-entry)</li>
-                            <li>Piece promotion</li>
-                        </ul>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xl font-semibold mb-4 text-orange-400">Basic Rules</h3>
-                    <div class="space-y-3 text-gray-300">
-                        <p><strong class="text-blue-400">Objective:</strong> Checkmate the opponent's King.</p>
-                        <p><strong class="text-blue-400">Captures:</strong> Captured pieces join your "hand" for
-                            dropping.
-                        </p>
-                        <p><strong class="text-blue-400">Promotion:</strong> Pieces can promote in the furthest 3 ranks.
-                        </p>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xl font-semibold mb-4 text-orange-400">Piece Movements</h3>
-                    <div class="grid grid-cols-3 gap-2 text-xs">
-                        <div class="bg-gray-800/50 p-2 rounded text-center">
-                            <div class="text-lg">K</div>
-                            <div class="text-yellow-400">King</div>
-                        </div>
-                        <div class="bg-gray-800/50 p-2 rounded text-center">
-                            <div class="text-lg">R</div>
-                            <div class="text-red-400">Rook</div>
-                        </div>
-                        <div class="bg-gray-800/50 p-2 rounded text-center">
-                            <div class="text-lg">B</div>
-                            <div class="text-green-400">Bishop</div>
-                        </div>
-                        <div class="bg-gray-800/50 p-2 rounded text-center">
-                            <div class="text-lg">G</div>
-                            <div class="text-yellow-400">Gold</div>
-                        </div>
-                        <div class="bg-gray-800/50 p-2 rounded text-center">
-                            <div class="text-lg">S</div>
-                            <div class="text-gray-400">Silver</div>
-                        </div>
-                        <div class="bg-gray-800/50 p-2 rounded text-center">
-                            <div class="text-lg">N</div>
-                            <div class="text-blue-400">Knight</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <dialog id="shogi-modal" class="modal-main">
+      <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-3xl font-bold text-heading">🏯 Shogi - Japanese Chess</h2>
+          <button id="close-shogi-btn" class="modal-close">&times;</button>
         </div>
+        <div class="grid lg:grid-cols-3 gap-8 text-sm">
+          <div>
+            <h3 class="text-xl font-semibold mb-4 text-orange">Game Overview</h3>
+            <p>
+              A two-player strategy game. Unlike Western chess, captured pieces can be returned to the board as your
+              own, creating dynamic and complex gameplay.
+            </p>
+            <div class="info-box">
+              <h4 class="font-semibold text-green mb-2">Key Features:</h4>
+              <ul class="text-cream space-y-1 list-disc list-inside">
+                <li>9×9 board, 40 pieces</li>
+                <li>Piece drops (re-entry)</li>
+                <li>Piece promotion</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold mb-4 text-orange">Basic Rules</h3>
+            <div class="space-y-3 text-cream">
+              <p>
+                <strong class="text-blue">Objective:</strong>Checkmate the opponent's King.
+              </p>
+              <p>
+                <strong class="text-blue">Captures:</strong>Captured pieces join your "hand" for dropping.
+              </p>
+              <p>
+                <strong class="text-blue">Promotion:</strong>Pieces can promote in the furthest 3 ranks.
+              </p>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold mb-4 text-orange">Piece Movements</h3>
+            <div class="grid grid-cols-3 gap-2 text-xs">
+              <div class="piece-movement-box">
+                <div class="text-lg">K</div>
+                <div class="text-yellow">King</div>
+              </div>
+              <div class="piece-movement-box">
+                <div class="text-lg">R</div>
+                <div class="text-red">Rook</div>
+              </div>
+              <div class="piece-movement-box">
+                <div class="text-lg">B</div>
+                <div class="text-green">Bishop</div>
+              </div>
+              <div class="piece-movement-box">
+                <div class="text-lg">G</div>
+                <div class="text-yellow">Gold</div>
+              </div>
+              <div class="piece-movement-box">
+                <div class="text-lg">S</div>
+                <div class="text-gray">Silver</div>
+              </div>
+              <div class="piece-movement-box">
+                <div class="text-lg">N</div>
+                <div class="text-blue">Knight</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </dialog>
 
     <script src="./scripts/vendor/sweetalert.min.js"></script>
     <script src="./scripts/app.js"></script>
     <script src="./scripts/modals.js"></script>
-</body>
-
-
+  </body>
 </html>
