@@ -5,5 +5,8 @@
   },
   "scripts": {
     "css": "npx @tailwindcss/cli -i ./styles/input.css -o ./styles/output.css --watch"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
   }
 }

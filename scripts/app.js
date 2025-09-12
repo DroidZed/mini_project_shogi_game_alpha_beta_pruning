@@ -2,8 +2,6 @@ class ShogiGame {
     constructor() {
         this.board = this.initializeBoard();
         this.currentPlayer = 'sente';
-        this.selectedPiece = null;
-        this.selectedSquare = null;
         this.gameStarted = false;
         this.moveHistory = [];
         this.capturedPieces = {
@@ -55,22 +53,22 @@ class ShogiGame {
 
         const goteBackRow = ['lance', 'knight', 'silver', 'gold', 'king', 'gold', 'silver', 'knight', 'lance'];
         for (let col = 0; col < 9; col++) {
-            this.board[0][col] = { type: goteBackRow[col], owner: 'gote', promoted: false };
+            this.board[0][col] = {type: goteBackRow[col], owner: 'gote', promoted: false};
         }
-        this.board[1][1] = { type: 'rook', owner: 'gote', promoted: false };
-        this.board[1][7] = { type: 'bishop', owner: 'gote', promoted: false };
+        this.board[1][1] = {type: 'rook', owner: 'gote', promoted: false};
+        this.board[1][7] = {type: 'bishop', owner: 'gote', promoted: false};
         for (let col = 0; col < 9; col++) {
-            this.board[2][col] = { type: 'pawn', owner: 'gote', promoted: false };
+            this.board[2][col] = {type: 'pawn', owner: 'gote', promoted: false};
         }
 
         const senteBackRow = ['lance', 'knight', 'silver', 'gold', 'king', 'gold', 'silver', 'knight', 'lance'];
         for (let col = 0; col < 9; col++) {
-            this.board[6][col] = { type: 'pawn', owner: 'sente', promoted: false };
+            this.board[6][col] = {type: 'pawn', owner: 'sente', promoted: false};
         }
-        this.board[7][7] = { type: 'rook', owner: 'sente', promoted: false };
-        this.board[7][1] = { type: 'bishop', owner: 'sente', promoted: false };
+        this.board[7][7] = {type: 'rook', owner: 'sente', promoted: false};
+        this.board[7][1] = {type: 'bishop', owner: 'sente', promoted: false};
         for (let col = 0; col < 9; col++) {
-            this.board[8][col] = { type: senteBackRow[col], owner: 'sente', promoted: false };
+            this.board[8][col] = {type: senteBackRow[col], owner: 'sente', promoted: false};
         }
     }
 
@@ -205,7 +203,7 @@ class ShogiGame {
                 const newRow = row + dr;
                 const newCol = col + dc;
                 if (this.isInBounds(newRow, newCol)) {
-                    moves.push({ row: newRow, col: newCol });
+                    moves.push({row: newRow, col: newCol});
                 }
             }
         }
@@ -220,7 +218,7 @@ class ShogiGame {
                 const newRow = row + dr * i;
                 const newCol = col + dc * i;
                 if (!this.isInBounds(newRow, newCol)) break;
-                moves.push({ row: newRow, col: newCol });
+                moves.push({row: newRow, col: newCol});
                 if (this.board[newRow][newCol]) break;
             }
         }
@@ -235,7 +233,7 @@ class ShogiGame {
                 const newRow = row + dr * i;
                 const newCol = col + dc * i;
                 if (!this.isInBounds(newRow, newCol)) break;
-                moves.push({ row: newRow, col: newCol });
+                moves.push({row: newRow, col: newCol});
                 if (this.board[newRow][newCol]) break;
             }
         }
@@ -261,7 +259,7 @@ class ShogiGame {
             const newRow = row + dr * direction;
             const newCol = col + dc;
             if (this.isInBounds(newRow, newCol)) {
-                moves.push({ row: newRow, col: newCol });
+                moves.push({row: newRow, col: newCol});
             }
         }
         return moves;
@@ -277,7 +275,7 @@ class ShogiGame {
             const newRow = row + dr * direction;
             const newCol = col + dc;
             if (this.isInBounds(newRow, newCol)) {
-                moves.push({ row: newRow, col: newCol });
+                moves.push({row: newRow, col: newCol});
             }
         }
         return moves;
@@ -285,12 +283,15 @@ class ShogiGame {
 
     getKnightMoves(row, col, direction) {
         const moves = [];
-        const knightMoves = [[-2, -1], [-2, 1]]; // Forward jumps
-        for (const [dr, dc] of knightMoves) {
-            const newRow = row + dr * direction;
+        // A shogi knight moves two squares forward and one square to the left or right, jumping over pieces.
+        const forwardStep = 2 * direction;
+        const sideSteps = [-1, 1];
+
+        for (const dc of sideSteps) {
+            const newRow = row + forwardStep;
             const newCol = col + dc;
             if (this.isInBounds(newRow, newCol)) {
-                moves.push({ row: newRow, col: newCol });
+                moves.push({row: newRow, col: newCol});
             }
         }
         return moves;
@@ -301,7 +302,7 @@ class ShogiGame {
         for (let i = 1; i < 9; i++) {
             const newRow = row + direction * i;
             if (!this.isInBounds(newRow, col)) break;
-            moves.push({ row: newRow, col: col });
+            moves.push({row: newRow, col: col});
             if (this.board[newRow][col]) break;
         }
         return moves;
@@ -309,7 +310,7 @@ class ShogiGame {
 
     getPawnMoves(row, col, direction) {
         const newRow = row + direction;
-        return this.isInBounds(newRow, col) ? [{ row: newRow, col: col }] : [];
+        return this.isInBounds(newRow, col) ? [{row: newRow, col: col}] : [];
     }
 
     isInBounds(row, col) {
@@ -365,7 +366,7 @@ class ShogiGame {
             for (let col = 0; col < 9; col++) {
                 const piece = this.board[row][col];
                 if (piece && piece.type === 'king' && piece.owner === player) {
-                    kingPos = { row, col };
+                    kingPos = {row, col};
                     break;
                 }
             }
@@ -433,7 +434,7 @@ class ShogiGame {
                 }
 
                 this.dragState.dragging = true;
-                this.dragState.droppingPiece = { type: pieceType, owner: owner };
+                this.dragState.droppingPiece = {type: pieceType, owner: owner};
                 e.dataTransfer.setData('text/plain', `drop:${pieceType}:${owner}`);
                 e.dataTransfer.effectAllowed = 'move';
 
@@ -448,7 +449,7 @@ class ShogiGame {
             const col = parseInt(square.dataset.col);
 
             this.dragState.dragging = true;
-            this.dragState.originalSquare = { row, col };
+            this.dragState.originalSquare = {row, col};
             e.dataTransfer.setData('text/plain', `${row},${col}`);
             e.dataTransfer.effectAllowed = 'move';
 
@@ -464,7 +465,7 @@ class ShogiGame {
                 const originalSquare = this.boardElement.querySelector(`[data-row="${this.dragState.originalSquare.row}"][data-col="${this.dragState.originalSquare.col}"]`);
                 originalSquare?.classList.remove('selected');
             }
-            this.dragState = { dragging: false, originalSquare: null, droppingPiece: null };
+            this.dragState = {dragging: false, originalSquare: null, droppingPiece: null};
         });
 
         this.boardElement.addEventListener('dragover', (e) => {
@@ -594,7 +595,7 @@ class ShogiGame {
         this.updateGameStatistics();
 
         if (capturedPiece) {
-            this.capturedPieces[moveMaker].push({ type: capturedPiece.type, promoted: false });
+            this.capturedPieces[moveMaker].push({type: capturedPiece.type, promoted: false});
             this.gameStats.totalCaptures++;
             this.updateCapturedPieces();
         }
@@ -629,7 +630,6 @@ class ShogiGame {
             }
         }
 
-        const direction = owner === 'sente' ? -1 : 1;
         const lastRank = owner === 'sente' ? 0 : 8;
         const secondToLastRank = owner === 'sente' ? 1 : 7;
 
@@ -642,7 +642,7 @@ class ShogiGame {
 
         if (pieceType === 'pawn') {
             const opponent = owner === 'sente' ? 'gote' : 'sente';
-            this.board[row][col] = { type: pieceType, owner: owner, promoted: false };
+            this.board[row][col] = {type: pieceType, owner: owner, promoted: false};
             const isMate = this.isCheckmate(opponent);
             this.board[row][col] = null;
             if (isMate) {
@@ -650,7 +650,7 @@ class ShogiGame {
             }
         }
 
-        this.board[row][col] = { type: pieceType, owner: owner, promoted: false };
+        this.board[row][col] = {type: pieceType, owner: owner, promoted: false};
         const inCheck = this.isInCheck(owner);
         this.board[row][col] = null;
         if (inCheck) {
@@ -668,10 +668,10 @@ class ShogiGame {
             capturedArray.splice(index, 1);
         }
 
-        this.board[row][col] = { type: pieceType, owner: owner, promoted: false };
+        this.board[row][col] = {type: pieceType, owner: owner, promoted: false};
         if (this.isInCheck(owner)) {
             this.board[row][col] = null;
-            capturedArray.push({ type: pieceType, promoted: false });
+            capturedArray.push({type: pieceType, promoted: false});
             this.logEvent('Illegal drop: Cannot leave king in check.');
             return;
         }
@@ -679,7 +679,10 @@ class ShogiGame {
         const moveMaker = this.currentPlayer;
         const opponent = (moveMaker === 'sente') ? 'gote' : 'sente';
 
-        const moveNotation = `${this.getPieceChar({ type: pieceType, owner })}*${9 - col}${String.fromCharCode(97 + row)}`;
+        const moveNotation = `${this.getPieceChar({
+            type: pieceType,
+            owner
+        })}*${9 - col}${String.fromCharCode(97 + row)}`;
         this.moveHistory.push(moveNotation);
         this.updateMoveHistory();
         document.getElementById('last-move').textContent = moveNotation;
@@ -703,212 +706,222 @@ class ShogiGame {
         }
     }
 
-    // New helper to find the checking piece(s)
-    getCheckingPieces(player) {
-        const checkingPieces = [];
-        let kingPos = null;
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
-                const piece = this.board[row][col];
-                if (piece && piece.type === 'king' && piece.owner === player) {
-                    kingPos = { row, col };
-                    break;
-                }
-            }
-            if (kingPos) break;
-        }
-
-        if (!kingPos) return [];
-
-        const opponent = player === 'sente' ? 'gote' : 'sente';
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
-                const piece = this.board[row][col];
-                if (piece && piece.owner === opponent) {
-                    const moves = this.getPossibleMoves(row, col);
-                    if (moves.some(move => move.row === kingPos.row && move.col === kingPos.col)) {
-                        checkingPieces.push({ row, col, piece });
-                    }
-                }
-            }
-        }
-        return checkingPieces;
-    }
-
     makeAIMove() {
         const startTime = performance.now();
+        this.gameStats.nodesEvaluated = 0;
+        this.gameStats.nodesPruned = 0;
+
         const depth = this.gameStats.searchDepth;
-        const baseNodes = 200 * Math.pow(depth, 2);
-        const nodesEvaluated = Math.floor(baseNodes + Math.random() * baseNodes);
-        const nodesPruned = Math.floor(nodesEvaluated * (0.3 + Math.random() * 0.4));
-
-        this.gameStats.nodesEvaluated += nodesEvaluated;
-        this.gameStats.nodesPruned += nodesPruned;
-
-        if (this.isCheckmate('gote')) {
-            this.logEvent("Checkmate! Player wins!");
-            document.getElementById('game-state').textContent = 'Player Wins';
-            this.gameStarted = false;
-            this.updateTurnDisplay();
+        // A depth of 0 will result in a random (but legal) move.
+        if (depth === 0) {
+            const moves = this.getAllMovesForPlayer('gote');
+            if (moves.length === 0) {
+                this.endGame('sente');
+                return;
+            }
+            const randomMove = moves[Math.floor(Math.random() * moves.length)];
+            if (randomMove.type === 'drop') {
+                this.dropPiece(randomMove.drop.type, 'gote', randomMove.to.row, randomMove.to.col);
+            } else {
+                this.makeMove(randomMove.from.row, randomMove.from.col, randomMove.to.row, randomMove.to.col);
+            }
             return;
         }
 
-        if (!this.isInCheck('gote') && !this.getPossibleMovesForPlayer('gote').length && !this.capturedPieces.gote.length) {
-            this.logEvent("Stalemate! It's a draw.");
-            document.getElementById('game-state').textContent = 'Draw';
-            this.gameStarted = false;
-            this.updateTurnDisplay();
+
+        const allMoves = this.getAllMovesForPlayer('gote');
+
+        if (allMoves.length === 0) {
+            if (this.isInCheck('gote')) this.endGame('sente');
+            else this.endGame('draw'); // Stalemate
             return;
         }
 
-        const aiMoves = [];
-        const inCheck = this.isInCheck('gote');
-        const checkingPieces = inCheck ? this.getCheckingPieces('gote') : [];
-        let kingPos = null;
+        let bestMove = allMoves[0];
+        let maxEval = -Infinity;
+        let alpha = -Infinity;
 
-        // Find king position
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
-                const piece = this.board[row][col];
-                if (piece && piece.type === 'king' && piece.owner === 'gote') {
-                    kingPos = { row, col };
-                    break;
-                }
+        // Iterate through all possible moves to find the best one
+        for (const move of allMoves) {
+            const undo = this.applyMove(move);
+            // The next level is the minimizing player (sente)
+            const evaluation = this.alphaBeta(depth - 1, alpha, Infinity, false);
+            this.undoMove(undo);
+
+            if (evaluation > maxEval) {
+                maxEval = evaluation;
+                bestMove = move;
             }
-            if (kingPos) break;
         }
 
-        // Prioritize king moves if in check
-        if (inCheck && kingPos) {
-            const kingMoves = this.getPossibleMoves(kingPos.row, kingPos.col);
-            kingMoves.forEach(move => {
-                if (this.isValidMoveForPiece(kingPos.row, kingPos.col, move.row, move.col)) {
-                    aiMoves.push({ from: { row: kingPos.row, col: kingPos.col }, to: move, piece: this.board[kingPos.row][kingPos.col], priority: 2 });
-                }
-            });
-        }
+        const thinkTime = performance.now() - startTime;
+        this.gameStats.timeTaken += thinkTime;
+        this.gameStats.thinkTimes.push(thinkTime);
+        this.gameStats.bestScore = (maxEval / 100).toFixed(2);
+        this.updateGameStatistics();
 
-        // Add moves that capture or block checking pieces
-        if (inCheck && checkingPieces.length > 0) {
-            for (let row = 0; row < 9; row++) {
-                for (let col = 0; col < 9; col++) {
-                    const piece = this.board[row][col];
-                    if (piece && piece.owner === 'gote' && !(piece.type === 'king' && inCheck)) {
-                        const moves = this.getPossibleMoves(row, col);
-                        moves.forEach(move => {
-                            if (this.isValidMoveForPiece(row, col, move.row, move.col)) {
-                                let priority = 0;
-                                if (checkingPieces.some(cp => cp.row === move.row && cp.col === move.col)) {
-                                    priority = 1; // Capturing checking piece
-                                } else if (this.isBlockingMove(kingPos, checkingPieces, move)) {
-                                    priority = 0.5; // Blocking check
-                                }
-                                aiMoves.push({ from: { row, col }, to: move, piece, priority });
-                            }
-                        });
-                    }
-                }
+        if (bestMove) {
+            if (bestMove.type === 'drop') {
+                document.getElementById('best-move').textContent = `${this.getPieceChar({type: bestMove.drop.type})}*${9 - bestMove.to.col}${String.fromCharCode(97 + bestMove.to.row)}`;
+                this.logEvent(`AI dropping ${bestMove.drop.type} at ${bestMove.to.row},${bestMove.to.col}`);
+                this.dropPiece(bestMove.drop.type, 'gote', bestMove.to.row, bestMove.to.col);
+            } else {
+                const piece = this.board[bestMove.from.row][bestMove.from.col];
+                document.getElementById('best-move').textContent = this.getMoveNotation(bestMove.from.row, bestMove.from.col, bestMove.to.row, bestMove.to.col, piece, this.board[bestMove.to.row][bestMove.to.col]);
+                this.logEvent(`AI moving ${piece.type} from ${bestMove.from.row},${bestMove.from.col} to ${bestMove.to.row},${bestMove.to.col}`);
+                this.makeMove(bestMove.from.row, bestMove.from.col, bestMove.to.row, bestMove.to.col);
             }
         } else {
-            // Add all other piece moves if not in check
-            for (let row = 0; row < 9; row++) {
-                for (let col = 0; col < 9; col++) {
-                    const piece = this.board[row][col];
-                    if (piece && piece.owner === 'gote') {
-                        this.getPossibleMoves(row, col).forEach(move => {
-                            if (this.isValidMoveForPiece(row, col, move.row, move.col)) {
-                                aiMoves.push({ from: { row, col }, to: move, piece, priority: 0 });
-                            }
-                        });
-                    }
-                }
-            }
-        }
-
-        // Add possible drops
-        this.capturedPieces.gote.forEach(piece => {
-            for (let row = 0; row < 9; row++) {
-                for (let col = 0; col < 9; col++) {
-                    if (this.canDropPiece(piece.type, 'gote', row, col)) {
-                        let priority = 0;
-                        if (inCheck && checkingPieces.length > 0) {
-                            if (checkingPieces.some(cp => cp.row === row && cp.col === col)) {
-                                priority = 1; // Dropping to capture checking piece
-                            } else if (this.isBlockingMove(kingPos, checkingPieces, { row, col })) {
-                                priority = 0.5; // Dropping to block check
-                            }
-                        }
-                        aiMoves.push({ drop: { type: piece.type, owner: 'gote' }, to: { row, col }, priority });
-                    }
-                }
-            }
-        });
-
-        if (aiMoves.length > 0) {
-            // Sort moves by priority (higher priority first)
-            aiMoves.sort((a, b) => (b.priority || 0) - (a.priority || 0));
-            // Pick randomly from top priority moves
-            const maxPriority = aiMoves[0].priority || 0;
-            const topMoves = aiMoves.filter(move => (move.priority || 0) === maxPriority);
-            const selectedMove = topMoves[Math.floor(Math.random() * topMoves.length)];
-            const thinkTime = (performance.now() - startTime) + (50 * depth) + (Math.random() * 100);
-
-            this.gameStats.timeTaken += thinkTime;
-            this.gameStats.thinkTimes.push(thinkTime);
-
-            if (selectedMove.drop) {
-                const notation = `${this.getPieceChar({ type: selectedMove.drop.type, owner: 'gote' })}*${9 - selectedMove.to.col}${String.fromCharCode(97 + selectedMove.to.row)}`;
-                document.getElementById('best-move').textContent = notation;
-                this.logEvent(`AI dropping ${selectedMove.drop.type} at ${selectedMove.to.row},${selectedMove.to.col}`);
-                this.dropPiece(selectedMove.drop.type, 'gote', selectedMove.to.row, selectedMove.to.col);
-            } else {
-                const notation = this.getMoveNotation(selectedMove.from.row, selectedMove.from.col, selectedMove.to.row, selectedMove.to.col, selectedMove.piece, this.board[selectedMove.to.row][selectedMove.to.col]);
-                document.getElementById('best-move').textContent = notation;
-                this.logEvent(`AI moving ${selectedMove.piece.type} from ${selectedMove.from.row},${selectedMove.from.col} to ${selectedMove.to.row},${selectedMove.to.col}`);
-                this.makeMove(selectedMove.from.row, selectedMove.from.col, selectedMove.to.row, selectedMove.to.col);
-            }
-        } else {
-            this.logEvent("No legal moves available for AI.");
-            if (inCheck) {
-                this.logEvent("Checkmate! Player wins!");
-                document.getElementById('game-state').textContent = 'Player Wins';
-            } else {
-                this.logEvent("Stalemate! It's a draw.");
-                document.getElementById('game-state').textContent = 'Draw';
-            }
-            this.gameStarted = false;
-            this.updateTurnDisplay();
+            this.logEvent("AI Error: No best move found. Game may be over.");
+            if (this.isInCheck('gote')) this.endGame('sente');
         }
     }
 
-    // Helper to check if a move blocks a check
-    isBlockingMove(kingPos, checkingPieces, move) {
-        if (!kingPos || checkingPieces.length === 0) return false;
-
-        for (const cp of checkingPieces) {
-            const { row: checkRow, col: checkCol } = cp;
-            if (cp.piece.type === 'lance' || cp.piece.type === 'rook' || cp.piece.type === 'bishop' || cp.piece.promoted) {
-                // Check if move lies on the path between checking piece and king
-                const dr = kingPos.row - checkRow;
-                const dc = kingPos.col - checkCol;
-                const steps = Math.max(Math.abs(dr), Math.abs(dc));
-                if (steps > 1) {
-                    const stepDr = dr / steps;
-                    const stepDc = dc / steps;
-                    for (let i = 1; i < steps; i++) {
-                        const pathRow = checkRow + Math.round(stepDr * i);
-                        const pathCol = checkCol + Math.round(stepDc * i);
-                        if (move.row === pathRow && move.col === pathCol) {
-                            return true;
+    // New AI Helper: Get all legal moves (board moves and drops) for a player.
+    getAllMovesForPlayer(player) {
+        const moves = [];
+        // 1. Get all board moves
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                const piece = this.board[r][c];
+                if (piece && piece.owner === player) {
+                    const possibleMoves = this.getPossibleMoves(r, c);
+                    for (const move of possibleMoves) {
+                        if (this.isValidMoveForPiece(r, c, move.row, move.col)) {
+                            moves.push({from: {row: r, col: c}, to: {row: move.row, col: move.col}, type: 'move'});
                         }
                     }
                 }
             }
         }
-        return false;
+        // 2. Get all drop moves
+        const uniqueCaptured = [...new Map(this.capturedPieces[player].map(p => [p.type, p])).values()];
+        for (const captured of uniqueCaptured) {
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (this.canDropPiece(captured.type, player, r, c)) {
+                        moves.push({drop: {type: captured.type, owner: player}, to: {row: r, col: c}, type: 'drop'});
+                    }
+                }
+            }
+        }
+        return moves;
     }
 
-    // Helper to get all possible moves for a player
+    // New AI Helper: Simulate a move for the search algorithm
+    applyMove(move) {
+        const undoData = {
+            move: move,
+            capturedPiece: null,
+            wasPromoted: false,
+            droppedPieceType: null
+        };
+
+        if (move.type === 'move') {
+            const piece = this.board[move.from.row][move.from.col];
+            undoData.wasPromoted = piece.promoted;
+            undoData.capturedPiece = this.board[move.to.row][move.to.col];
+
+            this.board[move.to.row][move.to.col] = piece;
+            this.board[move.from.row][move.from.col] = null;
+
+            if (undoData.capturedPiece) {
+                // Captured pieces are always demoted to their base type.
+                const capturedBaseType = undoData.capturedPiece.type;
+                this.capturedPieces[piece.owner].push({type: capturedBaseType, promoted: false});
+            }
+
+            // In search, we test the move with promotion if possible for a more aggressive AI
+            if (!piece.promoted && this.canPromote(piece, move.to.row)) {
+                piece.promoted = true;
+            }
+        } else { // 'drop'
+            const pieceToDrop = move.drop;
+            undoData.droppedPieceType = pieceToDrop.type;
+            const index = this.capturedPieces[pieceToDrop.owner].findIndex(p => p.type === pieceToDrop.type);
+            if (index > -1) {
+                this.capturedPieces[pieceToDrop.owner].splice(index, 1);
+            }
+            this.board[move.to.row][move.to.col] = {type: pieceToDrop.type, owner: pieceToDrop.owner, promoted: false};
+        }
+        return undoData;
+    }
+
+    // New AI Helper: Undo a simulated move
+    undoMove(undoData) {
+        const move = undoData.move;
+        if (move.type === 'move') {
+            const piece = this.board[move.to.row][move.to.col];
+            piece.promoted = undoData.wasPromoted;
+            this.board[move.from.row][move.from.col] = piece;
+            this.board[move.to.row][move.to.col] = undoData.capturedPiece;
+
+            if (undoData.capturedPiece) {
+                const owner = piece.owner;
+                const capturedBaseType = undoData.capturedPiece.type;
+                // Find and remove the last added piece of that type to correctly handle multiple captures of the same type.
+                for (let i = this.capturedPieces[owner].length - 1; i >= 0; i--) {
+                    if (this.capturedPieces[owner][i].type === capturedBaseType) {
+                        this.capturedPieces[owner].splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        } else { // 'drop'
+            this.board[move.to.row][move.to.col] = null;
+            this.capturedPieces[move.drop.owner].push({type: undoData.droppedPieceType, promoted: false});
+        }
+    }
+
+    // New AI Helper: The recursive alpha-beta pruning algorithm
+    alphaBeta(depth, alpha, beta, isMaximizingPlayer) {
+        this.gameStats.nodesEvaluated++;
+        if (depth === 0) {
+            return this.calculatePositionValue();
+        }
+
+        const player = isMaximizingPlayer ? 'gote' : 'sente';
+        const allMoves = this.getAllMovesForPlayer(player);
+
+        if (allMoves.length === 0) {
+            if (this.isInCheck(player)) {
+                // Return a very high/low score for checkmate
+                return isMaximizingPlayer ? -Infinity : Infinity;
+            }
+            return 0; // Stalemate
+        }
+
+        if (isMaximizingPlayer) { // Gote (AI)
+            let maxEval = -Infinity;
+            for (const move of allMoves) {
+                const undo = this.applyMove(move);
+                const evaluation = this.alphaBeta(depth - 1, alpha, beta, false);
+                this.undoMove(undo);
+                maxEval = Math.max(maxEval, evaluation);
+                alpha = Math.max(alpha, evaluation);
+                if (beta <= alpha) {
+                    this.gameStats.nodesPruned++;
+                    break; // Beta cut-off
+                }
+            }
+            return maxEval;
+        } else { // Sente (Player)
+            let minEval = Infinity;
+            for (const move of allMoves) {
+                const undo = this.applyMove(move);
+                const evaluation = this.alphaBeta(depth - 1, alpha, beta, true);
+                this.undoMove(undo);
+                minEval = Math.min(minEval, evaluation);
+                beta = Math.min(beta, evaluation);
+                if (beta <= alpha) {
+                    this.gameStats.nodesPruned++;
+                    break; // Alpha cut-off
+                }
+            }
+            return minEval;
+        }
+    }
+
     getPossibleMovesForPlayer(player) {
         const moves = [];
         for (let row = 0; row < 9; row++) {
@@ -917,7 +930,7 @@ class ShogiGame {
                 if (piece && piece.owner === player) {
                     this.getPossibleMoves(row, col).forEach(move => {
                         if (this.isValidMoveForPiece(row, col, move.row, move.col)) {
-                            moves.push({ from: { row, col }, to: move, piece });
+                            moves.push({from: {row, col}, to: move, piece});
                         }
                     });
                 }
@@ -927,22 +940,42 @@ class ShogiGame {
     }
 
     calculatePositionValue() {
-        let value = 0;
         const pieceValues = {
-            pawn: 1, lance: 3, knight: 3, silver: 5, gold: 5,
-            bishop: 8, rook: 10, king: 1000
+            pawn: 100, lance: 300, knight: 320, silver: 500, gold: 550,
+            bishop: 800, rook: 1000, king: 20000
         };
+        const promotedValues = {
+            pawn: 400, lance: 450, knight: 450, silver: 550,
+            bishop: 1000, rook: 1200
+        };
+
+        let value = 0;
+        // Evaluate pieces on the board
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 const piece = this.board[row][col];
                 if (piece) {
-                    let pieceValue = pieceValues[piece.type] || 0;
-                    if (piece.promoted) pieceValue *= 1.5;
-                    value += (piece.owner === 'sente' ? pieceValue : -pieceValue);
+                    let pieceValue = piece.promoted ? (promotedValues[piece.type] || pieceValues[piece.type]) : pieceValues[piece.type];
+                    if (piece.owner === 'sente') {
+                        value -= pieceValue; // Player's pieces are negative
+                    } else {
+                        value += pieceValue; // AI's pieces are positive
+                    }
                 }
             }
         }
-        this.gameStats.positionValue = value;
+
+        // Evaluate captured pieces (pieces in hand)
+        for (const piece of this.capturedPieces.sente) {
+            value -= pieceValues[piece.type] * 1.1; // Pieces in hand are slightly more valuable
+        }
+        for (const piece of this.capturedPieces.gote) {
+            value += pieceValues[piece.type] * 1.1;
+        }
+
+        // Update the display value, scaled for readability
+        this.gameStats.positionValue = (value / 100).toFixed(2);
+        return value; // Return the raw score for the AI
     }
 
     updateGameStatistics() {
@@ -955,8 +988,7 @@ class ShogiGame {
         document.getElementById('pruning-rate').textContent = `${pruningRate.toFixed(1)}%`;
 
         const evalValue = this.gameStats.positionValue;
-        const evalDisplay = (evalValue >= 0 ? '+' : '') + evalValue.toFixed(2);
-        document.getElementById('position-eval').textContent = evalDisplay;
+        document.getElementById('position-eval').textContent = (evalValue >= 0 ? '+' : '') + evalValue.toFixed(2);
 
         document.getElementById('move-count').textContent = this.gameStats.totalMoves;
     }
@@ -964,8 +996,8 @@ class ShogiGame {
     canPromote(piece, row) {
         if (piece.promoted || piece.type === 'king' || piece.type === 'gold') return false;
         if (piece.owner === 'sente' && row <= 2) return true;
-        if (piece.owner === 'gote' && row >= 6) return true;
-        return false;
+        return piece.owner === 'gote' && row >= 6;
+
     }
 
     getMoveNotation(fromRow, fromCol, toRow, toCol, piece, capturedPiece) {
@@ -973,7 +1005,7 @@ class ShogiGame {
         const ranks = 'abcdefghi';
         const from = `${files[fromCol]}${ranks[fromRow]}`;
         const to = `${files[toCol]}${ranks[toRow]}`;
-        const pieceChar = this.getPieceChar({ type: piece.type, owner: piece.owner, promoted: false });
+        const pieceChar = this.getPieceChar({type: piece.type, owner: piece.owner, promoted: false});
         const capture = capturedPiece ? 'x' : '-';
         const promotion = piece.promoted ? '+' : '';
         return `${pieceChar}${from}${capture}${to}${promotion}`;
@@ -992,7 +1024,7 @@ class ShogiGame {
         container.innerHTML = '';
         pieces.forEach(piece => {
             const pieceElement = document.createElement('div');
-            const displayPiece = { ...piece, owner };
+            const displayPiece = {...piece, owner};
             pieceElement.className = 'shogi-piece captured-piece cursor-grab';
             pieceElement.draggable = owner === 'sente';
             pieceElement.dataset.pieceType = piece.type;
@@ -1067,7 +1099,7 @@ class ShogiGame {
         this.gameStarted = true;
         this.currentPlayer = 'sente';
         this.moveHistory = [];
-        this.capturedPieces = { sente: [], gote: [] };
+        this.capturedPieces = {sente: [], gote: []};
         this.resetStats();
         this.renderBoard();
         this.updateTurnDisplay();
@@ -1098,59 +1130,29 @@ class ShogiGame {
 
     isCheckmate(player) {
         if (!this.isInCheck(player)) {
-            this.logEvent(`${player} not in check, checking for stalemate.`);
             return false;
         }
 
-        let moveCount = 0;
-        for (let r = 0; r < 9; r++) {
-            for (let c = 0; c < 9; c++) {
-                const piece = this.board[r][c];
-                if (piece && piece.owner === player) {
-                    const moves = this.getPossibleMoves(r, c);
-                    for (const move of moves) {
-                        moveCount++;
-                        const originalTargetPiece = this.board[move.row][move.col];
-                        const wasPromoted = piece.promoted;
-                        this.board[move.row][move.col] = piece;
-                        this.board[r][c] = null;
-                        if (this.canPromote(piece, move.row)) {
-                            piece.promoted = true;
-                        }
-                        if (!this.isInCheck(player)) {
-                            piece.promoted = wasPromoted;
-                            this.board[r][c] = piece;
-                            this.board[move.row][move.col] = originalTargetPiece;
-                            this.logEvent(`${player} has escape move: ${piece.type} from ${r},${c} to ${move.row},${move.col}`);
-                            return false;
-                        }
-                        piece.promoted = wasPromoted;
-                        this.board[r][c] = piece;
-                        this.board[move.row][move.col] = originalTargetPiece;
-                    }
-                }
-            }
+        // The game is checkmate if the player is in check AND has no legal moves to escape.
+        // getPossibleMovesForPlayer already filters for moves that would escape check.
+        if (this.getPossibleMovesForPlayer(player).length > 0) {
+            this.logEvent(`${player} is in check, but has legal moves. Not checkmate.`);
+            return false;
         }
 
-        let dropCount = 0;
+        // Also check if any drop can save the king. canDropPiece also validates the move.
         for (const captured of this.capturedPieces[player]) {
             for (let r = 0; r < 9; r++) {
                 for (let c = 0; c < 9; c++) {
                     if (this.canDropPiece(captured.type, player, r, c)) {
-                        dropCount++;
-                        this.board[r][c] = { type: captured.type, owner: player, promoted: false };
-                        if (!this.isInCheck(player)) {
-                            this.board[r][c] = null;
-                            this.logEvent(`${player} has escape drop: ${captured.type} at ${r},${c}`);
-                            return false;
-                        }
-                        this.board[r][c] = null;
+                        this.logEvent(`${player} has an escape drop: ${captured.type} at ${r},${c}`);
+                        return false;
                     }
                 }
             }
         }
 
-        this.logEvent(`Checkmate detected for ${player}. Checked ${moveCount} moves and ${dropCount} drops, none escape check.`);
+        this.logEvent(`Checkmate detected for ${player}. No legal moves or drops available.`);
         return true;
     }
 
