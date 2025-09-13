@@ -5,6 +5,7 @@
     <title>Shogi - AlphaBeta Pruning</title>
     <link rel="stylesheet" href="./styles/output.css"/>
     <link rel="stylesheet" href="./styles/custom.css"/>
+    <link rel="stylesheet" href="./styles/modals.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 
@@ -295,70 +296,56 @@
 </dialog>
 
 <dialog id="shogi-modal" class="modal-main">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-3xl font-bold text-heading">🏯 Shogi - Japanese Chess</h2>
-            <button id="close-shogi-btn" class="modal-close">&times;</button>
-        </div>
-        <div class="grid lg:grid-cols-3 gap-8 text-sm">
-            <div>
-                <h3 class="text-xl font-semibold mb-4 text-orange">Game Overview</h3>
-                <p class="text-white">
-                    A two-player strategy game. Unlike Western chess, captured pieces can be returned to the board as
-                    your
-                    own, creating dynamic and complex gameplay.
-                </p>
-                <div class="info-box">
-                    <h4 class="font-semibold text-green mb-2">Key Features:</h4>
-                    <ul class="text-cream space-y-1 list-disc list-inside">
-                        <li>9×9 board, 40 pieces</li>
-                        <li>Piece drops (re-entry)</li>
-                        <li>Piece promotion</li>
-                    </ul>
-                </div>
+    <div class="modal-content info-panel w-full max-w-5xl rounded-2xl shadow-2xl">
+
+        <button id="close-shogi-btn" class="modal-close">&times;</button>
+
+        <div class="p-6 sm:p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-heading">🏯 Shogi - Japanese Chess</h2>
             </div>
-            <div>
-                <h3 class="text-xl font-semibold mb-4 text-orange">Basic Rules</h3>
-                <div class="space-y-3 text-cream">
-                    <p>
-                        <strong class="text-blue">Objective:</strong>Checkmate the opponent's King.
-                    </p>
-                    <p>
-                        <strong class="text-blue">Captures:</strong>Captured pieces join your "hand" for dropping.
-                    </p>
-                    <p>
-                        <strong class="text-blue">Promotion:</strong>Pieces can promote in the furthest 3 ranks.
-                    </p>
-                </div>
-            </div>
-            <div>
-                <h3 class="text-xl font-semibold mb-4 text-orange">Piece Movements</h3>
-                <div class="grid grid-cols-3 gap-2 text-xs">
-                    <div class="piece-movement-box">
-                        <div class="text-white text-lg">K</div>
-                        <div class="text-yellow">King</div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+
+                <div>
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold mb-4 text-orange">Game Overview</h3>
+                        <p class="text-sm text-white">
+                            A two-player strategy game where captured pieces can be returned to the board as your own, creating dynamic and complex gameplay.
+                        </p>
+                        <div class="info-box mt-4 text-sm">
+                            <h4 class="font-semibold text-green mb-2">Key Features:</h4>
+                            <ul class="text-cream space-y-1 list-disc list-inside">
+                                <li>9×9 board, 40 pieces</li>
+                                <li>Piece drops (re-entry)</li>
+                                <li>Piece promotion</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="piece-movement-box">
-                        <div class="text-white text-lg">R</div>
-                        <div class="text-red">Rook</div>
-                    </div>
-                    <div class="piece-movement-box">
-                        <div class="text-white text-lg">B</div>
-                        <div class="text-green">Bishop</div>
-                    </div>
-                    <div class="piece-movement-box">
-                        <div class="text-white text-lg">G</div>
-                        <div class="text-yellow">Gold</div>
-                    </div>
-                    <div class="piece-movement-box">
-                        <div class="text-white text-lg">S</div>
-                        <div class="text-gray">Silver</div>
-                    </div>
-                    <div class="piece-movement-box">
-                        <div class="text-white text-lg">N</div>
-                        <div class="text-blue">Knight</div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-orange">Basic Rules</h3>
+                        <div class="space-y-3 text-cream text-sm">
+                            <p><strong class="text-blue">Objective:</strong> Checkmate the opponent's King.</p>
+                            <p><strong class="text-blue">Captures:</strong> Captured pieces join your "hand" for dropping.</p>
+                            <p><strong class="text-blue">Promotion:</strong> Pieces can promote in the furthest 3 ranks.</p>
+                        </div>
                     </div>
                 </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 text-orange text-center">How to Play</h3>
+                    <div class="responsive-video">
+                        <iframe
+                                class="rounded-lg shadow-lg"
+                                src="https://www.youtube.com/embed/4RdZ_PzK-fg"
+                                title="How to Play Shogi"
+                                frameborder="0"
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

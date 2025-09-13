@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
     "http-server": "^14.1.1"
   }
 }

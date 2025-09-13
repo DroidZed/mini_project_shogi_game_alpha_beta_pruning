@@ -1,0 +1,111 @@
+/* --- Modal Styling --- */
+.modal-main {
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    align-self: center;
+    justify-self: center;
+    margin: 2em;
+}
+
+.modal-content {
+    background-color: #6d4c41;
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 2px solid #8d6e63;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.modal-close {
+    color: #c8b59e;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.modal-close:hover {
+    color: #f5e5d8;
+}
+
+.info-box {
+    background-color: #4e342e;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 2px solid #6d4c41;
+}
+
+.code-block {
+    background-color: #4e342e;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 2px solid #6d4c41;
+    overflow-x: auto;
+    color: white;
+}
+
+.piece-movement-box {
+    background-color: #4e342e;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #6d4c41;
+    text-align: center;
+}
+
+/* --- Responsive adjustments --- */
+@media (max-width: 768px) {
+    .info-panel {
+        padding: 1rem;
+    }
+}
+
+/* Styling for the semi-transparent background behind the modal */
+.modal-main::backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+/* Base styles for the dialog itself */
+.modal-main {
+    background: transparent; /* Makes the dialog wrapper invisible */
+    border: none;
+    max-width: none; /* Let the inner div control the width */
+}
+
+/* A modern, styled close button */
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #a0aec0; /* gray-500 */
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.modal-close:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+.responsive-video {
+    position: relative;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+}
+
+.responsive-video iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
