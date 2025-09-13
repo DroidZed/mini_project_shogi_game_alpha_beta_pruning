@@ -1,378 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8"/>
     <title>Shogi - AlphaBeta Pruning</title>
-    <link rel="stylesheet" href="./styles/output.css" />
-    <link rel="stylesheet" href="./styles/custom.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
+    <link rel="stylesheet" href="./styles/output.css"/>
+    <link rel="stylesheet" href="./styles/custom.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
 
-  <body class="bg-wood text-cream min-h-screen font-serif">
-    <header class="header-main">
-      <div class="container mx-auto px-4 py-6">
+<body class="bg-wood text-cream min-h-screen font-serif">
+<header class="header-main">
+    <div class="container mx-auto px-4 py-6">
         <h1 class="text-5xl font-bold text-center text-heading drop-shadow-lg">将棋 Shogi AI - Alpha-Beta Pruning</h1>
         <p class="text-center text-subheading mt-3 text-lg">
-          Interactive demonstration of minimax with alpha-beta pruning in Japanese Chess
+            Interactive demonstration of minimax with alpha-beta pruning in Japanese Chess
         </p>
-      </div>
-    </header>
+    </div>
+</header>
 
-    <main class="container mx-auto px-4 py-6">
-      <section class="flex flex-wrap justify-center gap-4 mb-8">
+<main class="container mx-auto px-4 py-6">
+    <section class="flex flex-wrap justify-center gap-4 mb-8">
         <button id="open-about-btn" class="btn-action">📖 About This Demo</button>
         <button id="open-pseudo-btn" class="btn-action">💻 View Algorithm</button>
         <button id="open-shogi-btn" class="btn-action">🏯 How to Play Shogi</button>
-      </section>
+    </section>
 
-      <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
         <div class="xl:col-span-1 space-y-6">
-          <section class="info-panel">
-            <h2 class="section-title text-center">🤖 AI Performance</h2>
-            <div class="grid grid-cols-1 gap-4">
-              <div class="stat-box stat-green">
-                <div class="text-sm font-semibold">Nodes Evaluated</div>
-                <div class="text-3xl font-bold stat-value" id="nodes-evaluated">0</div>
-              </div>
-              <div class="stat-box stat-red">
-                <div class="text-sm font-semibold">Nodes Pruned</div>
-                <div class="text-3xl font-bold stat-value" id="nodes-pruned">0</div>
-              </div>
-              <div class="stat-box stat-blue">
-                <div class="text-sm font-semibold">Pruning Rate</div>
-                <div class="text-3xl font-bold stat-value" id="pruning-rate">0%</div>
-              </div>
-              <div class="stat-box stat-purple">
-                <div class="text-sm font-semibold">Time (ms)</div>
-                <div class="text-3xl font-bold stat-value" id="time-taken">0</div>
-              </div>
-            </div>
-          </section>
+            <section class="info-panel">
+                <h2 class="section-title text-center">🤖 AI Performance</h2>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="stat-box stat-green">
+                        <div class="text-sm font-semibold">Nodes Evaluated</div>
+                        <div class="text-3xl font-bold stat-value" id="nodes-evaluated">0</div>
+                    </div>
+                    <div class="stat-box stat-red">
+                        <div class="text-sm font-semibold">Nodes Pruned</div>
+                        <div class="text-3xl font-bold stat-value" id="nodes-pruned">0</div>
+                    </div>
+                    <div class="stat-box stat-blue">
+                        <div class="text-sm font-semibold">Pruning Rate</div>
+                        <div class="text-3xl font-bold stat-value" id="pruning-rate">0%</div>
+                    </div>
+                    <div class="stat-box stat-purple">
+                        <div class="text-sm font-semibold">Time (ms)</div>
+                        <div class="text-3xl font-bold stat-value" id="time-taken">0</div>
+                    </div>
+                </div>
+            </section>
 
-          <div class="info-panel">
-            <h3 class="section-title text-center">📊 Analysis</h3>
-            <div class="space-y-4 text-sm">
-              <div class="stat-box stat-subtle">
-                <div class="text-sm font-semibold">Position Value:</div>
-                <div id="position-eval" class="font-mono text-2xl">+0.00</div>
-              </div>
-              <div class="stat-box stat-subtle">
-                <div class="text-sm font-semibold">Best AI Move:</div>
-                <div id="best-move" class="font-mono text-lg">None</div>
-              </div>
+            <div class="info-panel">
+                <h3 class="section-title text-center">📊 Analysis</h3>
+                <div class="space-y-4 text-sm">
+                    <div class="stat-box stat-subtle">
+                        <div class="text-sm font-semibold">Position Value:</div>
+                        <div id="position-eval" class="font-mono text-2xl">+0.00</div>
+                    </div>
+                    <div class="stat-box stat-subtle">
+                        <div class="text-sm font-semibold">Best AI Move:</div>
+                        <div id="best-move" class="font-mono text-lg">None</div>
+                    </div>
+                </div>
             </div>
-          </div>
 
-          <div class="info-panel">
-            <h3 class="section-title text-center">⚡ Status</h3>
-            <div class="space-y-4 text-sm">
-              <div class="stat-box stat-subtle">
-                <div class="text-sm font-semibold">Move Count:</div>
-                <div id="move-count" class="font-mono text-2xl">0</div>
-              </div>
-              <div class="stat-box stat-subtle">
-                <div class="text-sm font-semibold">Game State:</div>
-                <div id="game-state" class="font-mono text-lg">Ready</div>
-              </div>
-              <div class="stat-box stat-subtle">
-                <div class="text-sm font-semibold">Last Move:</div>
-                <div id="last-move" class="font-mono text-lg">None</div>
-              </div>
+            <div class="info-panel">
+                <h3 class="section-title text-center">⚡ Status</h3>
+                <div class="space-y-4 text-sm">
+                    <div class="stat-box stat-subtle">
+                        <div class="text-sm font-semibold">Move Count:</div>
+                        <div id="move-count" class="font-mono text-2xl">0</div>
+                    </div>
+                    <div class="stat-box stat-subtle">
+                        <div class="text-sm font-semibold">Game State:</div>
+                        <div id="game-state" class="font-mono text-lg">Ready</div>
+                    </div>
+                    <div class="stat-box stat-subtle">
+                        <div class="text-sm font-semibold">Last Move:</div>
+                        <div id="last-move" class="font-mono text-lg">None</div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
 
         <div class="xl:col-span-2 space-y-6">
-          <div class="info-panel">
-            <div class="flex flex-wrap gap-4 items-center justify-between mb-6">
-              <div class="flex flex-wrap gap-4">
-                <button id="start-game" class="btn-game btn-green">🎮 New Game</button>
-                <button
-                  id="forfeit-game"
-                  class="btn-game btn-red disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled
-                >
-                  🏳️ Forfeit
-                </button>
-                <button id="reset-stats" class="btn-game btn-subtle">📊 Reset Stats</button>
-              </div>
-              <div class="flex gap-4 items-center control-box">
-                <label for="ai-depth" class="text-lg font-bold">AI Depth:</label>
-                <select id="ai-depth" class="select-field">
-                  <option value="">AI Depth</option>
-                  <option value="2">2 - Fast</option>
-                  <option value="3" selected>3 - Balanced</option>
-                  <option value="4">4 - Strong</option>
-                  <option value="5">5 - Expert</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="turn-indicator">
-              <div class="text-center">
-                <span class="text-lg font-semibold text-subheading">Current Turn: </span>
-                <span id="current-turn" class="font-bold text-2xl">Game not started</span>
-                <div class="mt-3 text-base text-subheading" id="turn-info">
-                  Click "New Game" to begin your Shogi adventure
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="info-panel">
-            <h3 class="section-title text-red text-center flex items-center justify-center">
-              <span class="text-3xl mr-3">☖</span>
-              AI Captured Pieces (Gote)
-            </h3>
-            <div id="ai-captured" class="captured-area">
-              <div class="text-subheading text-lg w-full text-center py-4 font-semibold">No captures yet</div>
-            </div>
-          </div>
-
-          <div class="flex justify-center">
-            <div class="shogi-board-container">
-              <div class="grid grid-cols-9 gap-0 mb-3 text-amber-900">
-                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">9</div>
-                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">8</div>
-                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">7</div>
-                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">6</div>
-                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">5</div>
-                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">4</div>
-                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">3</div>
-                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">2</div>
-                <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">1</div>
-              </div>
-
-              <div class="flex">
-                <div class="flex flex-col mr-3 text-amber-900">
-                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">a</div>
-                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">b</div>
-                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">c</div>
-                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">d</div>
-                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">e</div>
-                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">f</div>
-                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">g</div>
-                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">h</div>
-                  <div class="w-8 h-14 flex items-center justify-center text-base font-bold">i</div>
+            <div class="info-panel">
+                <div class="flex flex-wrap gap-4 items-center justify-between mb-6">
+                    <div class="flex flex-wrap gap-4">
+                        <button id="start-game" class="btn-game btn-green">🎮 New Game</button>
+                        <button
+                                id="forfeit-game"
+                                class="btn-game btn-red disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled
+                        >
+                            🏳️ Forfeit
+                        </button>
+                        <button id="reset-stats" class="btn-game btn-subtle">📊 Reset Stats</button>
+                    </div>
+                    <div class="flex gap-4 items-center control-box">
+                        <label for="ai-depth" class="text-lg font-bold">AI Depth:</label>
+                        <select id="ai-depth" class="select-field">
+                            <option value="">AI Depth</option>
+                            <option value="2">2 - Fast</option>
+                            <option value="3" selected>3 - Balanced</option>
+                            <option value="4">4 - Strong</option>
+                            <option value="5">5 - Expert</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div id="shogi-board" class="shogi-board-grid"></div>
-              </div>
+                <div class="turn-indicator">
+                    <div class="text-center">
+                        <span class="text-lg font-semibold text-subheading">Current Turn: </span>
+                        <span id="current-turn" class="font-bold text-2xl">Game not started</span>
+                        <div class="mt-3 text-base text-subheading" id="turn-info">
+                            Click "New Game" to begin your Shogi adventure
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
 
-          <div class="info-panel">
-            <h3 class="section-title text-blue text-center flex items-center justify-center">
-              <span class="text-3xl mr-3">☗</span>
-              Player Captured Pieces (Sente)
-            </h3>
-            <div id="player-captured" class="captured-area">
-              <div class="text-subheading text-lg w-full text-center py-4 font-semibold">No captures yet</div>
+            <div class="info-panel">
+                <h3 class="section-title text-red text-center flex items-center justify-center">
+                    <span class="text-3xl mr-3">☖</span>
+                    AI Captured Pieces (Gote)
+                </h3>
+                <div id="ai-captured" class="captured-area">
+                    <div class="text-subheading text-lg w-full text-center py-4 font-semibold">No captures yet</div>
+                </div>
             </div>
-          </div>
+
+            <div class="flex justify-center">
+                <div class="shogi-board-container">
+                    <div class="grid grid-cols-9 gap-0 mb-3 text-amber-900">
+                        <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">9</div>
+                        <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">8</div>
+                        <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">7</div>
+                        <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">6</div>
+                        <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">5</div>
+                        <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">4</div>
+                        <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">3</div>
+                        <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">2</div>
+                        <div class="w-14 h-8 text-center text-base font-bold flex items-center justify-center">1</div>
+                    </div>
+
+                    <div class="flex">
+                        <div class="flex flex-col mr-3 text-amber-900">
+                            <div class="w-8 h-14 flex items-center justify-center text-base font-bold">a</div>
+                            <div class="w-8 h-14 flex items-center justify-center text-base font-bold">b</div>
+                            <div class="w-8 h-14 flex items-center justify-center text-base font-bold">c</div>
+                            <div class="w-8 h-14 flex items-center justify-center text-base font-bold">d</div>
+                            <div class="w-8 h-14 flex items-center justify-center text-base font-bold">e</div>
+                            <div class="w-8 h-14 flex items-center justify-center text-base font-bold">f</div>
+                            <div class="w-8 h-14 flex items-center justify-center text-base font-bold">g</div>
+                            <div class="w-8 h-14 flex items-center justify-center text-base font-bold">h</div>
+                            <div class="w-8 h-14 flex items-center justify-center text-base font-bold">i</div>
+                        </div>
+
+                        <div id="shogi-board" class="shogi-board-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3 class="section-title text-blue text-center flex items-center justify-center">
+                    <span class="text-3xl mr-3">☗</span>
+                    Player Captured Pieces (Sente)
+                </h3>
+                <div id="player-captured" class="captured-area">
+                    <div class="text-subheading text-lg w-full text-center py-4 font-semibold">No captures yet</div>
+                </div>
+            </div>
         </div>
 
         <div class="xl:col-span-1 space-y-6">
-          <div class="info-panel">
-            <h3 class="section-title text-green text-center">📜 Move History</h3>
-            <div id="move-history" class="log-panel">
-              <div class="text-subheading text-base text-center py-12 font-semibold">No moves recorded yet</div>
+            <div class="info-panel">
+                <h3 class="section-title text-green text-center">📜 Move History</h3>
+                <div id="move-history" class="log-panel">
+                    <div class="text-subheading text-base text-center py-12 font-semibold">No moves recorded yet</div>
+                </div>
             </div>
-          </div>
 
-          <div class="info-panel">
-            <h3 class="section-title text-yellow text-center">📋 Game Events</h3>
-            <div id="game-log" class="log-panel">
-              <div class="text-subheading text-base text-center py-12 font-semibold">Game not started</div>
+            <div class="info-panel">
+                <h3 class="section-title text-yellow text-center">📋 Game Events</h3>
+                <div id="game-log" class="log-panel">
+                    <div class="text-subheading text-base text-center py-12 font-semibold">Game not started</div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </main>
+    </div>
+</main>
 
-    <dialog id="about-modal" class="modal-main">
-      <div class="modal-content">
+<dialog id="about-modal" class="modal-main">
+    <div class="modal-content">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-3xl font-bold text-heading">About This Demo</h2>
-          <button id="close-about-btn" class="modal-close">&times;</button>
+            <h2 class="text-3xl font-bold text-heading">About This Demo</h2>
+            <button id="close-about-btn" class="modal-close">&times;</button>
         </div>
         <div class="grid lg:grid-cols-3 gap-8 text-sm">
-          <div>
-            <h3 class="text-xl font-semibold mb-4 text-blue">Alpha-Beta Pruning</h3>
-            <p>
-              An optimization for the minimax algorithm. It reduces the number of nodes evaluated by eliminating
-              branches that won't influence the final decision.
-            </p>
-            <div class="info-box">
-              <h4 class="font-semibold text-green mb-2">Key Benefits:</h4>
-              <ul class="text-cream space-y-1 list-disc list-inside">
-                <li>Reduces computation time</li>
-                <li>Maintains optimal play</li>
-                <li>Enables deeper search</li>
-              </ul>
-            </div>
-          </div>
-          <div>
-            <h3 class="text-xl font-semibold mb-4 text-blue">How It Works</h3>
-            <p>
-              The algorithm maintains two values: Alpha (best for maximizing player) and Beta (best for minimizing
-              player). When Alpha ≥ Beta, the branch is pruned.
-            </p>
-            <div class="info-box">
-              <h4 class="font-semibold text-yellow mb-2">Process:</h4>
-              <ul class="text-cream space-y-1 list-decimal list-inside">
-                <li>Explore game tree depth-first</li>
-                <li>Update Alpha/Beta values</li>
-                <li>Prune when Alpha ≥ Beta</li>
-                <li>Return best move</li>
-              </ul>
-            </div>
-          </div>
-          <div>
-            <h3 class="text-xl font-semibold mb-4 text-blue">Complexity Analysis</h3>
-            <div class="info-box">
-              <h4 class="font-semibold text-red mb-2">Time Complexity:</h4>
-              <div class="text-cream space-y-1">
-                <div>
-                  Best: <code class="text-green bg-panel px-1 rounded">O(b^(d/2))</code>
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-blue">Alpha-Beta Pruning</h3>
+                <p class="text-white">
+                    An optimization for the minimax algorithm. It reduces the number of nodes evaluated by eliminating
+                    branches that won't influence the final decision.
+                </p>
+                <div class="info-box">
+                    <h4 class="font-semibold text-green mb-2">Key Benefits:</h4>
+                    <ul class="text-cream space-y-1 list-disc list-inside">
+                        <li>Reduces computation time</li>
+                        <li>Maintains optimal play</li>
+                        <li>Enables deeper search</li>
+                    </ul>
                 </div>
-                <div>
-                  Worst: <code class="text-red bg-panel px-1 rounded">O(b^d)</code>
-                </div>
-              </div>
             </div>
-          </div>
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-blue">How It Works</h3>
+                <p class="text-white">
+                    The algorithm maintains two values: Alpha (best for maximizing player) and Beta (best for minimizing
+                    player). When Alpha ≥ Beta, the branch is pruned.
+                </p>
+                <div class="info-box">
+                    <h4 class="font-semibold text-yellow mb-2">Process:</h4>
+                    <ul class="text-cream space-y-1 list-decimal list-inside">
+                        <li>Explore game tree depth-first</li>
+                        <li>Update Alpha/Beta values</li>
+                        <li>Prune when Alpha ≥ Beta</li>
+                        <li>Return best move</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-blue">Complexity Analysis</h3>
+                <div class="info-box">
+                    <h4 class="font-semibold text-red mb-2">Time Complexity:</h4>
+                    <div class="text-cream space-y-1">
+                        <div>
+                            Best: <code class="text-green bg-panel px-1 rounded">O(b^(d/2))</code>
+                        </div>
+                        <div>
+                            Worst: <code class="text-red bg-panel px-1 rounded">O(b^d)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </dialog>
+    </div>
+</dialog>
 
-    <dialog id="pseudo-modal" class="modal-main">
-      <div class="modal-content">
+<dialog id="pseudo-modal" class="modal-main">
+    <div class="modal-content">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-3xl font-bold text-heading">Alpha-Beta Pruning Pseudocode</h2>
-          <button id="close-pseudo-btn" class="modal-close">&times;</button>
+            <h2 class="text-3xl font-bold text-heading">Alpha-Beta Pruning Pseudocode</h2>
+            <button id="close-pseudo-btn" class="modal-close">&times;</button>
         </div>
         <div class="grid lg:grid-cols-2 gap-8">
-          <div class="info-box">
-            <h3 class="text-lg font-semibold mb-4 text-blue">Main Algorithm</h3>
-            <pre class="code-block"><code>function alphaBeta(node, depth, a, b, isMax):
-  if depth == 0 or node.isTerminal:
-    return evaluate(node)
+            <div class="info-box">
+                <h3 class="text-lg font-semibold mb-4 text-blue">Main Algorithm</h3>
+                <pre class="code-block"><code>function alphaBeta(node, depth, a, b, isMax):
+    if depth == 0 or node.isTerminal:
+      return evaluate(node)
 
-  if isMax:
-    v = -∞
-    for child in node.children:
-      v = max(v, alphaBeta(child, d-1, a, b, false))
-      a = max(a, v)
-      if b <= a: break // Prune
-    return v
-  else:
-    v = +∞
-    for child in node.children:
-      v = min(v, alphaBeta(child, d-1, a, b, true))
-      b = min(b, v)
-      if b <= a: break // Prune
-    return v</code></pre>
-          </div>
-          <div class="info-box">
-            <h3 class="text-lg font-semibold mb-4 text-blue">Initial Call</h3>
-            <pre class="code-block"><code>function findBestMove(pos, depth):
-  bestMove = null
-  bestVal = -∞, a = -∞, b = +∞
+    if isMax:
+      v = -∞
+      for child in node.children:
+        v = max(v, alphaBeta(child, d-1, a, b, false))
+        a = max(a, v)
+        if b <= a: break // Prune
+      return v
+    else:
+      v = +∞
+      for child in node.children:
+        v = min(v, alphaBeta(child, d-1, a, b, true))
+        b = min(b, v)
+        if b <= a: break // Prune
+      return v</code></pre>
+            </div>
+            <div class="info-box">
+                <h3 class="text-lg font-semibold mb-4 text-blue">Initial Call</h3>
+                <pre class="code-block"><code>function findBestMove(pos, depth):
+    bestMove = null
+    bestVal = -∞, a = -∞, b = +∞
 
-  for move in getLegalMoves(pos):
-    newPos = makeMove(pos, move)
-    val = alphaBeta(newPos, d-1, a, b, false)
+    for move in getLegalMoves(pos):
+      newPos = makeMove(pos, move)
+      val = alphaBeta(newPos, d-1, a, b, false)
 
-    if val > bestVal:
-      bestVal = val
-      bestMove = move
-    a = max(a, val)
-  return bestMove</code></pre>
-          </div>
+      if val > bestVal:
+        bestVal = val
+        bestMove = move
+      a = max(a, val)
+    return bestMove</code></pre>
+            </div>
         </div>
-      </div>
-    </dialog>
+    </div>
+</dialog>
 
-    <dialog id="shogi-modal" class="modal-main">
-      <div class="modal-content">
+<dialog id="shogi-modal" class="modal-main">
+    <div class="modal-content">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-3xl font-bold text-heading">🏯 Shogi - Japanese Chess</h2>
-          <button id="close-shogi-btn" class="modal-close">&times;</button>
+            <h2 class="text-3xl font-bold text-heading">🏯 Shogi - Japanese Chess</h2>
+            <button id="close-shogi-btn" class="modal-close">&times;</button>
         </div>
         <div class="grid lg:grid-cols-3 gap-8 text-sm">
-          <div>
-            <h3 class="text-xl font-semibold mb-4 text-orange">Game Overview</h3>
-            <p>
-              A two-player strategy game. Unlike Western chess, captured pieces can be returned to the board as your
-              own, creating dynamic and complex gameplay.
-            </p>
-            <div class="info-box">
-              <h4 class="font-semibold text-green mb-2">Key Features:</h4>
-              <ul class="text-cream space-y-1 list-disc list-inside">
-                <li>9×9 board, 40 pieces</li>
-                <li>Piece drops (re-entry)</li>
-                <li>Piece promotion</li>
-              </ul>
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-orange">Game Overview</h3>
+                <p class="text-white">
+                    A two-player strategy game. Unlike Western chess, captured pieces can be returned to the board as
+                    your
+                    own, creating dynamic and complex gameplay.
+                </p>
+                <div class="info-box">
+                    <h4 class="font-semibold text-green mb-2">Key Features:</h4>
+                    <ul class="text-cream space-y-1 list-disc list-inside">
+                        <li>9×9 board, 40 pieces</li>
+                        <li>Piece drops (re-entry)</li>
+                        <li>Piece promotion</li>
+                    </ul>
+                </div>
             </div>
-          </div>
-          <div>
-            <h3 class="text-xl font-semibold mb-4 text-orange">Basic Rules</h3>
-            <div class="space-y-3 text-cream">
-              <p>
-                <strong class="text-blue">Objective:</strong>Checkmate the opponent's King.
-              </p>
-              <p>
-                <strong class="text-blue">Captures:</strong>Captured pieces join your "hand" for dropping.
-              </p>
-              <p>
-                <strong class="text-blue">Promotion:</strong>Pieces can promote in the furthest 3 ranks.
-              </p>
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-orange">Basic Rules</h3>
+                <div class="space-y-3 text-cream">
+                    <p>
+                        <strong class="text-blue">Objective:</strong>Checkmate the opponent's King.
+                    </p>
+                    <p>
+                        <strong class="text-blue">Captures:</strong>Captured pieces join your "hand" for dropping.
+                    </p>
+                    <p>
+                        <strong class="text-blue">Promotion:</strong>Pieces can promote in the furthest 3 ranks.
+                    </p>
+                </div>
             </div>
-          </div>
-          <div>
-            <h3 class="text-xl font-semibold mb-4 text-orange">Piece Movements</h3>
-            <div class="grid grid-cols-3 gap-2 text-xs">
-              <div class="piece-movement-box">
-                <div class="text-lg">K</div>
-                <div class="text-yellow">King</div>
-              </div>
-              <div class="piece-movement-box">
-                <div class="text-lg">R</div>
-                <div class="text-red">Rook</div>
-              </div>
-              <div class="piece-movement-box">
-                <div class="text-lg">B</div>
-                <div class="text-green">Bishop</div>
-              </div>
-              <div class="piece-movement-box">
-                <div class="text-lg">G</div>
-                <div class="text-yellow">Gold</div>
-              </div>
-              <div class="piece-movement-box">
-                <div class="text-lg">S</div>
-                <div class="text-gray">Silver</div>
-              </div>
-              <div class="piece-movement-box">
-                <div class="text-lg">N</div>
-                <div class="text-blue">Knight</div>
-              </div>
+            <div>
+                <h3 class="text-xl font-semibold mb-4 text-orange">Piece Movements</h3>
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                    <div class="piece-movement-box">
+                        <div class="text-white text-lg">K</div>
+                        <div class="text-yellow">King</div>
+                    </div>
+                    <div class="piece-movement-box">
+                        <div class="text-white text-lg">R</div>
+                        <div class="text-red">Rook</div>
+                    </div>
+                    <div class="piece-movement-box">
+                        <div class="text-white text-lg">B</div>
+                        <div class="text-green">Bishop</div>
+                    </div>
+                    <div class="piece-movement-box">
+                        <div class="text-white text-lg">G</div>
+                        <div class="text-yellow">Gold</div>
+                    </div>
+                    <div class="piece-movement-box">
+                        <div class="text-white text-lg">S</div>
+                        <div class="text-gray">Silver</div>
+                    </div>
+                    <div class="piece-movement-box">
+                        <div class="text-white text-lg">N</div>
+                        <div class="text-blue">Knight</div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </dialog>
-	
-	<!-- invisible audio for play with js -->
-	 <audio id="capture_sound" controls class="hidden">
-		<source src="./assets/audio/Capture.ogg" type="audio/ogg">
-	</audio> 
-	 <audio id="move_sound" controls class="hidden">
-		<source src="./assets/audio/Move.ogg" type="audio/ogg">
-	</audio> 
-	
-    <script src="./scripts/vendor/sweetalert.min.js"></script>
-    <script src="./scripts/app.js"></script>
-    <script src="./scripts/modals.js"></script>
-  </body>
+    </div>
+</dialog>
+
+<!-- invisible audio for play with js -->
+<audio id="capture_sound" controls class="hidden">
+    <source src="./assets/audio/Capture.ogg" type="audio/ogg">
+</audio>
+<audio id="move_sound" controls class="hidden">
+    <source src="./assets/audio/Move.ogg" type="audio/ogg">
+</audio>
+
+<script src="./scripts/vendor/sweetalert.min.js"></script>
+<script src="./scripts/app.js"></script>
+<script src="./scripts/modals.js"></script>
+</body>
 </html>
