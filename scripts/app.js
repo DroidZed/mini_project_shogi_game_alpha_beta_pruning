@@ -168,6 +168,26 @@ class ShogiGame {
     `;
   }
 
+  playCaptureSound() {
+	  const capture_audio = document.getElementById("capture_sound");
+	  try {
+		capture_audio.currentTime = 0; // Reset to beginning
+		capture_audio.play().catch(e => console.log('Audio play failed:', e));
+	  } catch (error) {
+		console.log('Capture sound error:', error);
+	  }
+	}
+
+  playMoveSound() {
+	  const move_sound = document.getElementById("move_sound");
+	  try {
+		move_sound.currentTime = 0; // Reset to beginning
+		move_sound.play().catch(e => console.log('Audio play failed:', e));
+	  } catch (error) {
+		console.log('Capture sound error:', error);
+	  }
+	}
+
   getPieceChar(piece) {
     if (!piece) return "";
 
@@ -706,7 +726,11 @@ class ShogiGame {
       });
       this.gameStats.totalCaptures++;
       this.updateCapturedPieces();
-    }
+	  
+	  this.playCaptureSound();
+    } else {
+	  this.playMoveSound();
+	}
 
     if (this.isCheckmate(opponent)) {
       this.updateCapturedPieces();
@@ -717,6 +741,7 @@ class ShogiGame {
     this.currentPlayer = opponent;
     this.updateTurnDisplay();
     this.renderBoard();
+
     this.logEvent(`Move: ${moveNotation}`);
 
     if (this.gameStarted && this.currentPlayer === "gote") {
@@ -784,12 +809,15 @@ class ShogiGame {
     }
 
     this.board[row][col] = { type: pieceType, owner: owner, promoted: false };
+	
     if (this.isInCheck(owner)) {
       this.board[row][col] = null;
       capturedArray.push({ type: pieceType, promoted: false });
       this.logEvent("Illegal drop: Cannot leave king in check.");
       return;
     }
+	
+	this.playMoveSound();
 
     const moveMaker = this.currentPlayer;
     const opponent = moveMaker === "sente" ? "gote" : "sente";
@@ -924,7 +952,6 @@ class ShogiGame {
     }
   }
 
-  // New AI Helper: Get all legal moves (board moves and drops) for a player.
   getAllMovesForPlayer(player) {
     const moves = [];
     // 1. Get all board moves
@@ -965,7 +992,6 @@ class ShogiGame {
     return moves;
   }
 
-  // New AI Helper: Simulate a move for the search algorithm
   applyMove(move) {
     const undoData = {
       move: move,
@@ -1014,7 +1040,6 @@ class ShogiGame {
     return undoData;
   }
 
-  // New AI Helper: Undo a simulated move
   undoMove(undoData) {
     const move = undoData.move;
     if (move.type === "move") {
@@ -1044,7 +1069,6 @@ class ShogiGame {
     }
   }
 
-  // New AI Helper: The recursive alpha-beta pruning algorithm
   alphaBeta(depth, alpha, beta, isMaximizingPlayer) {
     this.gameStats.nodesEvaluated++;
     if (depth === 0) {
